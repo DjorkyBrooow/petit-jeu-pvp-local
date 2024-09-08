@@ -1,9 +1,9 @@
-import State
-import Direction
-from typing import Final
+from game.State import State
+from game.Direction import Direction
+from game.Counter import Counter
 from abc import ABC
 
-class Class(ABC):
+class Class():
     # Base stats
     max_hp : int
     current_hp: int
@@ -16,31 +16,90 @@ class Class(ABC):
     name: str
 
     # Counters and values
-    shield_counter: int
     shield: int
-    stunned_counter: int
-    immobilized_counter: int
-    silence_counter: int
+    shield_counter: Counter
+    stunned_counter: Counter
+    immobilized_counter: Counter
+    silence_counter: Counter
+    poison: int
+    poison_counter: Counter
+    counters: dict[str, Counter]
 
     # Public variables
-    LOW_HP: Final = 13
-    MID_HP: Final = 16
-    HIGH_HP: Final= 20
+    LOW_HP: int = 17
+    MID_HP: int = 20
+    HIGH_HP: int= 24
     
-    LOW_DAMAGE: Final = 1
-    MID_DAMAGE: Final= 2
-    HIGH_DAMAGE: Final = 3
+    LOW_DAMAGE: int = 2
+    MID_DAMAGE: int= 3
+    HIGH_DAMAGE: int = 4
 
-    LOW_MOBILITY: Final = 3
-    MID_MOBILITY: Final = 4
-    HIGH_MOBILITY: Final= 5
+    LOW_MOBILITY: int = 3
+    MID_MOBILITY: int = 4
+    HIGH_MOBILITY: int= 5
 
-    CLOSE_RANGE: Final = 1
-    MID_RANGE: Final = 4
-    LONG_RANGE: Final = 7
+    CLOSE_RANGE: int = 1
+    MID_RANGE: int = 4
+    LONG_RANGE: int = 7
 
+    AVAILABLE_CLASSES=[
+        'Alchemist',
+        'Arcanist',
+        'Archer',
+        'Bard',
+        'Battlemage',
+        'Beastmaster',
+        'Berserker',
+        'Chaman',
+        'Cleric',
+        'Demon',
+        'Demonist',
+        'Druid',
+        'Elementalist',
+        'Enchanter',
+        'Executioner',
+        'Exorcist',
+        'Gladiator',
+        'Gravedigger',
+        'Hunter',
+        'Illusionist',
+        'Inquisitor',
+        'Mage',
+        'Monster',
+        'Necromancer',
+        'Ninja',
+        'Oracle',
+        'Outlaw',
+        'Paladin',
+        'Poisoner',
+        'Priest',
+        'Ranger',
+        'Rogue',
+        'Skeleton',
+        'Summoner',
+        'Templar',
+        'Warrior',
+        'Wizard'
+    ]
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.max_hp = Class.LOW_HP
+        self.current_hp = self.max_hp
+        self.shield_counter = Counter(0)
+        self.stunned_counter = Counter(0)
+        self.immobilized_counter = Counter(0)
+        self.silence_counter = Counter(0)
+        self.counters = {"shield_counter"     : self.shield_counter, 
+                        "stunned_counter"     : self.stunned_counter, 
+                        "silence_counter"     : self.silence_counter, 
+                        "immobilized_counter" : self.immobilized_counter,
+                        "poison_counter"      : self.poison_counter}
+        pass
 
     def end_of_turn(self) -> None:
+        for elem in self.counters:
+            self.counters[elem].decrement()
         pass
         
     def auto_attack(self, target: 'Class') -> None:
@@ -59,6 +118,8 @@ class Class(ABC):
             if self.current_hp <= 0:
                 self.set_is_alive(False)
 
+    def __str__(self) -> str:
+        return f"{self.name} : {self.current_hp} / {self.max_hp}"
 
     def is_alive(self) -> bool:
         return self.is_alive
@@ -120,8 +181,44 @@ class Class(ABC):
     def set_shield(self, shield: int) -> None:
         self.shield = shield
 
-    def get_shield_counter(self) -> int:
+    def get_shield_counter(self) -> Counter:
         return self.shield_counter
     
     def set_shield_counter(self, shield_counter: int) -> None:
-        self.shield_counter = shield_counter
+        self.shield_counter = Counter(shield_counter)
+        self.counters['shield_counter'] = self.shield_counter
+
+    def get_stunned_counter(self) -> Counter:
+        return self.stunned_counter
+    
+    def set_stunned_counter(self, stunned_counter: int) -> None:
+        self.stunned_counter = Counter(stunned_counter)
+        self.counters['stunned_counter'] = self.stunned_counter
+
+    def get_immobilized_counter(self) -> Counter:
+        return self.immobilized_counter
+    
+    def set_immobilized_counter(self, immobilized_counter: int) -> None:
+        self.immobilized_counter = Counter(immobilized_counter)
+        self.counters['immobilized_counter'] = self.immobilized_counter
+
+    def get_silence_counter(self) -> Counter:
+        return self.silence_counter
+    
+    def set_silence_counter(self, silence_counter: int) -> None:
+        self.silence_counter = Counter(silence_counter)
+        self.counters['silence_counter'] = self.silence_counter
+
+    def get_poison_counter(self) -> Counter:
+        return self.poison_counter
+    
+    def set_poison_counter(self, poison_counter: int) -> None:
+        self.poison_counter = Counter(poison_counter)
+        self.counters['poison_counter'] = self.poison_counter
+
+    def get_counters(self) -> list:
+        ret = []
+        for key in self.counters:
+            ret += str(self.counters[key])
+        return ret
+    
