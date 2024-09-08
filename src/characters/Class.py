@@ -59,7 +59,6 @@ class Class(ABC):
         'Enchanter',
         'Executioner',
         'Exorcist',
-        'Gladiator',
         'Gravedigger',
         'Hunter',
         'Illusionist',

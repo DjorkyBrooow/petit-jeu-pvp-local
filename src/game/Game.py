@@ -2,8 +2,6 @@ from characters.Class import Class
 
 class Game:
     
-    MAP_X_SIZE: int = 20
-    MAP_Y_SIZE: int = 10
     character_list: list[Class]
     
     def __init__(self) -> None:
