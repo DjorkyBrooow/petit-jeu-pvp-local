@@ -1,5 +1,4 @@
 from characters.Class import Class
-from game.Counter import Counter
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
