@@ -1,12 +1,12 @@
 from characters.Class import Class
-from game.Constants import *
+from game.static.Constants import *
 
 class Alchemist(Class):
   
   max_hp = Health.LOW_HP
   mobility = Mobility.MID_MOBILITY
   damage = Damage.LOW_DAMAGE
-  range = Range.LONG_RANGE
+  range = Range.MID_LONG_RANGE
   cooldown_skill_1 = 1
   cooldown_skill_2 = 3
 

@@ -7,3 +7,4 @@ class State(Enum):
     IMMOBILIZED = 2
     STUNNED = 3
     
+    # Define the specific behavior of the character based on their state

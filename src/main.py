@@ -1,12 +1,16 @@
 
-from game.Game import Game
+from game.Counter import ShieldCounter
+from game.Game import Game, Map
 from characters.Class import Class
+from game.static.SquareType import SquareType
 
 
 characters = Class.AVAILABLE_CLASSES
-SQUARE_SIZE: int = 50
-MAP_WIDTH: int = 640
-MAP_HEIGHT: int = 480
+
+map = Map(10,5)
+
+character_list = []
+
 
 images = {}
 for elem in characters:
