@@ -1,3 +1,6 @@
 src/*/__pycache__/
-*/__pycache__/*
+*/__pycache__/
+src/game/*/__pycache__/
+src/characters/*/__pycache__/
+
 .venv/

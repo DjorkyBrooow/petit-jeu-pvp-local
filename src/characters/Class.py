@@ -37,36 +37,38 @@ class Class(ABC):
     # Static variables
 
     AVAILABLE_CLASSES=[
-        'Alchemist', 'Arcanist', 'Archer',
-        'Barbarian', 'Bard', 'Battlemage', 'Beastmaster', 'Berserker', 'Blademaster',
-        'Chaman', 'Cleric', 'Cyborg',
-        'Demon', 'Demonist', 'Druid',
-        'Elementalist', 'Enchanter', 'Executioner', 'Exorcist',
+        'Alchemist',
+        'Berserker',
+        'Cyborg',
+        'Druid',
+        'Elementalist',
         'Gravedigger',
         'Hunter',
-        'Illusionist', 'Inquisitor',
-        'Monster',
-        'Necromancer', 'Ninja',
-        'Oracle', 'Outlaw',
-        'Paladin', 'Poisoner', 'Priest',
-        'Ranger', 'Rogue',
-        'Skeleton', 'Sniper', 'Spartan', 'Spy', 'Summoner',
+        'Illusionist',
+        'Mage',
+        'Necromancer',
+        'Oracle',
+        'Poisoner'
+        'Ranger', 
+        'Summoner',
         'Templar',
         'Viking',
-        'Warrior', 'Wizard',
+        'Warrior',
     ]
 
     def __init__(self) -> None:
         self.current_hp = self.max_hp
         self.state = State.NORMAL
         self.is_alive = True
+        self.name = type(self).__name__
+        self.content = self.name[0] + str(self.faction.value) 
         
 
     @abstractmethod
     def end_of_turn(self) -> None:
         
         pass
-        
+      pass
 
 
     @abstractmethod 

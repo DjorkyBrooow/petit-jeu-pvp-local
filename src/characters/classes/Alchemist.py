@@ -10,8 +10,8 @@ class Alchemist(Class):
   cooldown_skill_1 = 1
   cooldown_skill_2 = 3
 
-  def __init__(self, name: str) -> None:
-    super().__init__(name)
+  def __init__(self) -> None:
+    super().__init__()
     
   def skill_1(self) -> None:
     # Launches a potion on a target 
@@ -25,3 +25,16 @@ class Alchemist(Class):
     # All ennemies in the targeted area
     # Suffer damages
     super().skill_2()
+  
+  
+  def auto_attack(self, target: Class) -> None:
+    pass
+  
+  def move(self) -> None:
+    pass
+  
+  def end_of_turn(self) -> None:
+    pass
+  
+  def suffer_damage(self, source: Class, damage: int) -> None:
+    super().suffer_damage(source, damage)
