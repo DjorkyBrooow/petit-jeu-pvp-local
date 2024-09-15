@@ -9,6 +9,8 @@ from game.static.Constants import Health, Mobility, Damage, Range
 class Class(ABC):
     # Common stats
     current_hp: int
+    current_mobility: int
+    current_damage: int
     state: State
     is_alive: bool
 
@@ -18,6 +20,7 @@ class Class(ABC):
     mobility: Mobility
     damage: Damage
     range: Range
+    priority: int
     name: str
     skill_1: str
     cooldown_skill_1: int
@@ -27,12 +30,14 @@ class Class(ABC):
     y_coord: int
     faction: Faction
     content: str
+    id: int = 0
 
-    # Counters and values
+    # Counters
     shield_counters: dict[str: ShieldCounter] = {}
     poison_counters: dict[str: PoisonCounter] = {}
     state_counters: dict[str: StateCounter] = {}
     skill_counters: dict[str: Counter] = {}
+    counters: list[dict[str: Counter]] = [shield_counters, poison_counters, state_counters, skill_counters]
 
     # Static variables
 
@@ -48,7 +53,7 @@ class Class(ABC):
         'Mage',
         'Necromancer',
         'Oracle',
-        'Poisoner'
+        'Poisoner',
         'Ranger', 
         'Summoner',
         'Templar',
@@ -56,28 +61,55 @@ class Class(ABC):
         'Warrior',
     ]
 
-    def __init__(self) -> None:
-        self.current_hp = self.max_hp
+    def __init__(self, faction: Faction) -> None:
+        self.current_hp = self.max_hp.value
+        self.current_mobility = self.mobility.value
+        self.current_damage = self.damage.value
         self.state = State.NORMAL
         self.is_alive = True
-        self.name = type(self).__name__
-        self.content = self.name[0] + str(self.faction.value) 
-        
+        self.faction = faction
+        self.name = type(self).__name__ + " " + self.faction.name + " " + str(self.id)
+        self.content = self.name[0] + str(self.id) + self.faction.name[0]
+    
+
+    def play_turn(self) -> None:
+        if self.is_alive:
+            self.start_turn()
+            self.end_of_turn()
+        else:
+            pass
+
+    @abstractmethod
+    def start_turn(self) -> None:
+        if self.state == State.SILENCE:
+            self.move(self.x_coord, self.y_coord)
+            self.auto_attack()
+        elif self.state == State.IMMOBILIZED:
+            pass
+        elif self.state == State.STUNNED:
+            pass
+        elif self.state == State.NORMAL:
+            pass
+        pass
 
     @abstractmethod
     def end_of_turn(self) -> None:
-        
-        pass
-      pass
+        for poison in self.poison_counters.values():
+            self.suffer_damage(self, poison.value)
+
+        for elem in self.counters:
+            for id in elem.keys():
+                elem[id].decrement()
 
 
     @abstractmethod 
     def auto_attack(self, target: 'Class') -> None:
-        target.suffer_damage(self.damage)
+        target.suffer_damage('Attaque auto', self.damage)
+        print (f"{self.name} a lancé 'Attaque auto' sur {target.name}")
     
     @abstractmethod
-    def suffer_damage(self, source: 'Class', damage: int) -> None:
-        if self.get_is_alive():
+    def suffer_damage(self, source: str, damage: int) -> None:
+        if self.is_alive:
             if self.get_total_shield() > 0:
                 diff_shield = damage - self.get_total_shield()
                 if diff_shield < 0:
@@ -89,19 +121,27 @@ class Class(ABC):
                         else:
                             self.shield_counters[source_id].value -= diff_shield
                             break
+                        print(f"{self.name} a subi '{damage}' points de dégâts dans le bouclier de {source}")
                 else:
                     for id in self.shield_counters.keys():
                         self.remove_shield(id)
-                    self.set_current_hp(self.current_hp - diff_shield)
+                    self.current_hp = self.current_hp - diff_shield
+                    print(f"{self.name} a subi {damage} points de '{source}' dont {diff_shield} dans sa barre de PV")
+
             else:
-                self.set_current_hp(self.current_hp - damage)
+                self.current_hp = self.current_hp - damage
+                print(f"{self.name} a subi {damage} points de '{source}' dans sa barre de PV")
             if self.current_hp <= 0:
-                self.set_is_alive(False)
+                self.is_alive = False
         else:
             print("Votre cible n'existe plus")
 
     def __str__(self) -> str:
-        return f"{self.name} : {self.current_hp} / {self.max_hp}"
+        return f"{self.content} : {self.current_hp}{f' ({str(self.get_total_shield())})' if self.get_total_shield() > 0 else ''} / {self.max_hp.value}"
+
+    @abstractmethod
+    def passive(self) -> None:
+        pass
 
     @abstractmethod
     def skill_1(self) -> None:
@@ -112,9 +152,15 @@ class Class(ABC):
         pass
 
     @abstractmethod
-    def move(self) -> None:
-
-        pass
+    def move(self, x: int, y: int) -> None:
+        # if self.x_coord == 0 and coords[0] < 0 or self.y_coord == 0 and coords[1] < 0:
+        #     print ("Déplacement impossible hors des limites du terrain")
+        # else:
+        self.x_coord += x
+        self.y_coord += y
+        self.current_mobility -= 1
+        
+            
     
     def is_at_range(self, target: 'Class') -> bool:
         res = False
@@ -137,106 +183,36 @@ class Class(ABC):
     #                       #
     #########################
 
-    def add_shield(self, source_id, shield_counter) -> None:
-        if source_id in self.shield_counters:
-            print("Current shield reset")
+    def add_shield(self, shield_counter: ShieldCounter) -> None:
+        if shield_counter.skill_source in self.shield_counters:
+            print(f"Current shield {shield_counter.skill_source} reset")
         else:
             print(f"Successfully added shield for {shield_counter.count} rounds to block {shield_counter.value} damage")
-        self.shield_counters[source_id] = shield_counter
+        self.shield_counters[shield_counter.skill_source] = shield_counter
 
-    def remove_shield(self, source_id) -> None:
+    def remove_shield(self, source_id: str) -> None:
         if source_id in self.shield_counters:
             del self.shield_counters[source_id]
-        print(f"The shield of {source_id} has expired or has been destroyed")
+            print(f"The shield of {source_id} has expired or has been destroyed")
     
     def get_total_shield(self) -> int:
-        return sum(self.shield_counters.values())
+        sum = 0
+        for value in self.shield_counters.values():
+            sum += value.value
+        return sum
 
-    def add_poison(self, source_id, poison_counter) -> None:
-        if source_id in self.poison_counters:
-            print("Current poison reset")
+    def add_poison(self, poison_counter: PoisonCounter) -> None:
+        if poison_counter.skill_source in self.poison_counters:
+            print(f"Current poison {poison_counter.skill_source} reset")
         else:
             print(f"Successfully added poison for {poison_counter.count} rounds to deal {poison_counter.value} damage per round")
-        self.poison_counters[source_id] = poison_counter
+        self.poison_counters[poison_counter.skill_source] = poison_counter
 
-    def remove_poison(self, source_id) -> None:
+    def remove_poison(self, source_id: str) -> None:
         if source_id in self.poison_counters:
             del self.poison_counters[source_id]
-        print(f"The poison of {source_id} has expired or has been cleansed")
+            print(f"The poison of {source_id} has expired or has been cleansed")
 
 
     def get_total_poison(self) -> int:
         return sum(self.poison_counters.values())
-
-    #########################
-    #                       #
-    #  GETTERS AND SETTERS  #
-    #                       #
-    #########################
-
-
-    def get_is_alive(self) -> bool:
-        return self.is_alive
-    
-    def set_is_alive(self, is_alive: bool) -> None:
-        self.is_alive = is_alive
-
-    def get_max_hp(self) -> Health:
-        return self.max_hp
-    
-    def set_max_hp(self, max_hp: Health) -> None:
-        self.max_hp = max_hp
-
-    def get_current_hp(self) -> int:
-        return self.current_hp
-    
-    def set_current_hp(self, current_hp: int) -> None:
-        self.current_hp = current_hp
-
-    def get_mobility(self) -> Mobility:
-        return self.mobility
-    
-    def set_mobility(self, mobility: Mobility) -> None:
-        self.mobility = mobility
-
-    def get_damage(self) -> Damage:
-        return self.damage
-    
-    def set_damage(self, damage: Damage) -> None:
-        self.damage = damage
-
-    def get_range(self) -> Range:
-        return self.range
-    
-    def set_range(self, range: Range) -> None:
-        self.range = range
-    
-    def get_state(self) -> State:
-        return self.state
-    
-    def set_state(self, state: State) -> None:
-        self.state = state
-
-    def get_direction(self) -> Direction:
-        return self.direction
-    
-    def set_direction(self, direction: Direction) -> None:
-        self.direction = direction
-    
-    def get_name(self) -> str:
-        return self.name
-    
-    def set_name(self, name: str) -> None:
-        self.name = name
-
-    def get_faction(self) -> Faction: 
-        return self.faction
-
-    def set_team(self, faction: Faction) -> None:
-        self.faction = faction
-
-    def get_cooldown_skill_1(self) -> int:
-        return self.cooldown_skill_1
-
-    def set_cooldown_skill_1(self, cooldown_skill_1: int) -> None:
-        self.cooldown_skill_1 = cooldown_skill_1

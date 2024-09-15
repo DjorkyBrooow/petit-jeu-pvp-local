@@ -1,21 +1,26 @@
-
-from game.Counter import ShieldCounter
-from game.Game import Game, Map
+from game.Game import Game
 from characters.Class import Class
-from characters.classes.Alchemist import Alchemist
-from game.static.SquareType import SquareType
+from characters.classes import *
 
 
 characters = Class.AVAILABLE_CLASSES
 
-map = Map(10,5)
 
-char = Alchemist()
-print (char.name)
+game = Game()
 
-character_list = []
+# game.start_game()
 
-
-images = {}
+mob = []
+print("CLASSES ORDERED BY MOBILITY")
 for elem in characters:
-  images[elem] = f"ressources/img/characters/{elem}.jpeg"
+    char = globals()[elem.capitalize()]
+    mobility = char.mobility
+    if mobility not in mob:
+        mob += [mobility]
+        print(f"{mobility.name} :")
+        for character in characters:
+            char = globals()[character.capitalize()]
+            if char.mobility == mobility:
+                print(f"- {character}")
+
+

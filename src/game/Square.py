@@ -13,35 +13,8 @@ class Square():
         self.y_coord = y_coord
         self.type = type
 
-    def get_type(self) -> SquareType:
-        return self.type
-
-    def get_x_coord(self) -> int:
-        return self.x_coord
-
-    def get_y_coord(self) -> int:
-        return self.y_coord
-
-    def get_player(self) -> bool:
-        return self.player
-
-    def get_content(self) -> str:  
-        return self.content
-
-    def set_type(self, type: SquareType) -> None:
-        self.type = type
-    
-    def set_x_coord(self, x_coord: int) -> None:
-        self.x_coord = x_coord
-
-    def set_y_coord(self, y_coord: int) -> None:
-        self.y_coord = y_coord
-
-    def set_player(self, player: bool) -> None:
-        self.player = player
-
-    def set_content(self, content: str) -> None:
-        self.content = content
+    def reset_content(self) -> None:
+        self.content = "   "
         
     def __str__(self) -> str:
-        return self.type.value
+        return self.type.value + self.content + "\033[0m"
