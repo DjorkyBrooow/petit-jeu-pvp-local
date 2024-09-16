@@ -4,7 +4,7 @@ from game.static.Constants import *
 class Poisoner(Class):
   
   max_hp = Health.HIGH_HP
-  mobility = Mobility.LOW_MOBILITY
+  mobility = Mobility.HIGH_MOBILITY
   damage = Damage.LOW_DAMAGE
   range = Range.MID_CLOSE_RANGE
   priority = 7
@@ -15,15 +15,19 @@ class Poisoner(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # When the poisoner walks
+    # He leaves the case behind him poisonned
+    # Lasts 2 rounds
     super().passive()
     
-  def skill_1(self) -> None:
-    # 
+  def skill_1(self, target: Class) -> None:
+    # Launchs a poison on an ennemy target
+    # Lasts for 3 rounds 
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Increases his mobility and damage 
+    # Lasts 2 rounds
     super().skill_2()
   
   

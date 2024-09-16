@@ -8,7 +8,7 @@ class Berserker(Class):
   damage = Damage.VERY_HIGH_DAMAGE
   range = Range.CLOSE_RANGE
   priority = 17
-  cooldown_skill_1 = 4
+  cooldown_skill_1 = 5
   cooldown_skill_2 = 2
 
   def __init__(self, faction) -> None:

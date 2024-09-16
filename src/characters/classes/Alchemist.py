@@ -16,7 +16,7 @@ class Alchemist(Class):
     super().__init__(faction)
     
   def passive(self) -> None:
-    # 
+    # Each target hit by a potion has 25% chance to double its effects 
     super().passive()
 
   def skill_1(self) -> None:

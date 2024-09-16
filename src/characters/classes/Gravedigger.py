@@ -15,15 +15,21 @@ class Gravedigger(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # Each time a character dies
+    # The gravedigger gains permanent damage and max_hp
+    # At the beginning of the game
+    # A random ennemy character is  designed
+    # At the death of this character, the gravedigger doubles the previous bonus
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Hits an ennemy with his shovel
+    # Damages are increased if the target is low hp
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Targets an area and all characters in this area are immobilized for 1 round
+    # Suffering enough damage sets them free
     super().skill_2()
   
   

@@ -22,6 +22,8 @@ class Class(ABC):
     range: Range
     priority: int
     name: str
+    passive: str
+    cooldown_passive: int
     skill_1: str
     cooldown_skill_1: int
     skill_2: str
