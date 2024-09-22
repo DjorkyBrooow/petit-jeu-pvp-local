@@ -15,15 +15,20 @@ class Mage(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # When the target is stunned
+    # The mage deals more damage
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Throws a thunder bolt to an ennemy
+    # The target and ennemies at close range 
+    # Suffer damage and are stunned
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Creates a static field on a line
+    # Between the mage and the target (ally or ennemy)
+    # All ennemies that cross this line are stunned for 1 round
     super().skill_2()
   
   

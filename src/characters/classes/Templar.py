@@ -15,15 +15,25 @@ class Templar(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # Stacks holy power when he is hit
+    # By an ennemy (not ground effects)
+    # Reduces damage taken by ennemies
+    # Holy power at max charge is used 
+    # To improve the next ability
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Makes himself immune and increases mobility for 1 round
+    # Reinforces the next auto attack
+    # Buffed : Gives the buff to all allies around him
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Creates a blinding light around him
+    # That blinds all ennemies while they are in it 
+    # Lasts for 3 rounds
+    # Buffed : Also heals all allies 
+    # And damages ennemies
     super().skill_2()
   
   

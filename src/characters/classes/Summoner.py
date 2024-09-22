@@ -15,15 +15,21 @@ class Summoner(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # Can have only 1 summon at a time 
+    # Every buff gets also applied to the summoner 
+    # Every summon lasts until they die or they are replaced by the other type
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Summons a tiger that deals big damage
+    # Other active : Gives venom on the fangs
+    # Auto attacks apply poison
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Summons a elephant that can tank big damage
+    # Other active : gives a shield 
+    # While shield is active, it irradiates and deals damage
     super().skill_2()
   
   

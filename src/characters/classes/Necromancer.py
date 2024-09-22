@@ -8,22 +8,27 @@ class Necromancer(Class):
   damage = Damage.LOW_DAMAGE
   range = Range.MID_LONG_RANGE
   priority = 8
-  cooldown_skill_1 = 3
-  cooldown_skill_2 = 3
+  cooldown_skill_1 = 5
+  cooldown_skill_2 = 4
 
   def __init__(self) -> None:
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # Each time an ennemy dies, he appears again as a living dead
+    # He has half of the stats of the original character
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Curses an ennemy and circles him
+    # The ennemy is not allowed move for 1 round
+    # If he moves he is cursed for the next 3 rounds
+    # Increasing the damages he suffers
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Suffers damage and gains a damage buff 
+    # For 3 rounds
     super().skill_2()
   
   

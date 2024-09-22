@@ -15,15 +15,19 @@ class Ranger(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # The bigger the distance
+    # The bigger the damage
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Shoots a perforing shot 
+    # Ignores shields and continues behind the target
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Executes an ennemy
+    # If the target is low hp 
+    # Critical hit granted
     super().skill_2()
   
   

@@ -15,15 +15,20 @@ class Illusionist(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # When the illusionist gets below 25% hp 
+    # He gets immune for 1 round
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # For the next round all damages and effects taken 
+    # Will be redirects to the launcher
+    # Does not affect damage taken by the ground
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # The illusionist dashes in an area
+    # Deals damage
+    # Comes back at his original place at the next round
     super().skill_2()
   
   

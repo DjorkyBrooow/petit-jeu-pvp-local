@@ -15,15 +15,30 @@ class Oracle(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # Turns the wheel of fate at every launched skill
+    # The oracle can never be the target of her own spells 
+    # Possibilities :
+    # - ALLY
+    # Heals an ally 
+    # Shields an ally
+    # Makes an ally immune
+    # Dispells an ally
+    # - ENNEMY
+    # Deals damage to an ennemy
+    # Stuns an ennemy
+    # Silences an ennemy
+    # Immobilizes an ennemy
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Choice
+    # Sacrifies hp to heal all allies
+    # Sacrifies hp to damage all ennemies
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Heals herself and silences an ally
+    # Heals herself and immunizes an ennemy 
     super().skill_2()
   
   

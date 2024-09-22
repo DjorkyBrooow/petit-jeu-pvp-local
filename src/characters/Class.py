@@ -5,6 +5,7 @@ from game.static.Faction import Faction
 from abc import ABC, abstractmethod
 from math import sqrt
 from game.static.Constants import Health, Mobility, Damage, Range
+import random
 
 class Class(ABC):
     # Common stats
@@ -13,6 +14,8 @@ class Class(ABC):
     current_damage: int
     state: State
     is_alive: bool
+    critical_rate: float = 0.1
+    critical_hit: float = 1.4
 
     # Unique stats
     max_hp : Health
@@ -106,8 +109,12 @@ class Class(ABC):
 
     @abstractmethod 
     def auto_attack(self, target: 'Class') -> None:
-        target.suffer_damage('Attaque auto', self.damage)
-        print (f"{self.name} a lancé 'Attaque auto' sur {target.name}")
+      damage = self.damage
+      rng = random.randrange(100)
+      if rng <= self.critical_rate * 100:
+        damage *= self.critical_hit
+      target.suffer_damage('Attaque auto', damage)
+     print (f"{self.name} a lancé 'Attaque auto' sur {target.name}')
     
     @abstractmethod
     def suffer_damage(self, source: str, damage: int) -> None:

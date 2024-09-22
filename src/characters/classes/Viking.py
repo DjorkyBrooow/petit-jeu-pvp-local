@@ -15,15 +15,18 @@ class Viking(Class):
     super().__init__()
 
   def passive(self) -> None:
-    # 
+    # The viking gains damage for each ennemy at close range 
+    # Gains hp for each ally at close range
     super().passive()
     
   def skill_1(self) -> None:
-    # 
+    # Fears all ennemies at close range
+    # Increase damage dealt for 3 rounds
     super().skill_1()
   
   def skill_2(self) -> None:
-    # 
+    # Gains a shield that gives 30% chance to block attacks 
+    # For 3 rounds
     super().skill_2()
   
   
