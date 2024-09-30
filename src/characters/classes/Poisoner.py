@@ -17,7 +17,8 @@ class Poisoner(Class):
   def passive(self) -> None:
     # When the poisoner walks
     # He leaves the case behind him poisonned
-    # Lasts 2 rounds
+    # Lasts 1 round
+    # Poisons the ennemy for 2 rounds
     super().passive()
     
   def skill_1(self, target: Class) -> None:

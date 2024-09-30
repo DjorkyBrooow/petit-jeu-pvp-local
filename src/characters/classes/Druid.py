@@ -2,6 +2,12 @@ from characters.Class import Class
 from game.static.Constants import *
 from enum import Enum
 
+
+class Form(Enum):
+  HUMAN = 0
+  BEAR = 1 
+  BIRD = 2
+  
 class Druid(Class):
   
   max_hp = Health.MID_HP
@@ -53,7 +59,3 @@ class Druid(Class):
     super().suffer_damage(source, damage)
     
     
-class Form(Enum):
-  HUMAN = 0
-  BEAR = 1 
-  BIRD = 2

@@ -2,6 +2,14 @@ from characters.Class import Class
 from game.static.Constants import *
 from enum import Enum
 
+
+class Element(Enum):
+  NO_ELEMENT = 0
+  EARTH = 1 
+  FIRE = 2 
+  AIR = 3 
+  WATER = 4
+
 class Elementalist(Class):
   
   max_hp = Health.VERY_LOW_HP
@@ -11,7 +19,7 @@ class Elementalist(Class):
   priority = 4
   cooldown_skill_1 = 2
   cooldown_skill_2 = 5
-  current_element: Element = None 
+  current_element: Element = Element.NO_ELEMENT 
 
   def __init__(self) -> None:
     super().__init__()
@@ -56,9 +64,3 @@ class Elementalist(Class):
     super().suffer_damage(source, damage)
     
     
-class Element(Enum):
-  NO_ELEMENT = 0
-  EARTH = 1 
-  FIRE = 2 
-  AIR = 3 
-  WATER = 4

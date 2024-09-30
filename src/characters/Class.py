@@ -114,7 +114,7 @@ class Class(ABC):
       if rng <= self.critical_rate * 100:
         damage *= self.critical_hit
       target.suffer_damage('Attaque auto', damage)
-     print (f"{self.name} a lancé 'Attaque auto' sur {target.name}')
+      print (f"{self.name} a lancé 'Attaque auto' sur {target.name}")
     
     @abstractmethod
     def suffer_damage(self, source: str, damage: int) -> None:

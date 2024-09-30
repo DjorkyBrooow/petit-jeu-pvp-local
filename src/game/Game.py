@@ -6,9 +6,9 @@ import os
 
 class Game:
     
-    character_list: list[Class]
-    alliance_list: list[Class]
-    horde_list: list[Class]
+    character_list: list[Class] = []
+    alliance_list: list[Class] = []
+    horde_list: list[Class]= []
     map: 'Map'
     
     def __init__(self) -> None:
@@ -16,6 +16,9 @@ class Game:
 
     def start_game(self) -> None:
         os.system('cls' if os.name == 'nt' else 'clear')
+        print("""Vous avez lancé une partie de JdR PvP.
+Deux équipes vont s'affronter, la première à terrasser l'autre gagne la partie.
+Voici les étapes pour commencer la partie :""")
         self.chose_map()
         self.chose_characters()
         character_list = self.alliance_list + self.horde_list
@@ -29,22 +32,19 @@ class Game:
     def chose_map(self) -> None:
         res = False
         while not res:
-            width = int(input("Choisissez la largeur de la carte (min 10 - max 25): "))
+            width = int(input("1. Choisissez la largeur de la carte (min 10 - max 25): "))
             if width >= 10 and width <= 25:
                 res = True
         res = False
         while not res:
-            height = int(input("Choisissez la hauteur de la carte (min 5 - max 15): "))
+            height = int(input("2. Choisissez la hauteur de la carte (min 5 - max 15): "))
             if height >= 5 and height <= 15:
                 res = True
         self.map = Map(width, height)
     
     def chose_characters(self) -> None:
-        print("""Vous avez lancé une partie de JdR PvP.
-Deux équipes vont s'affronter, la première à terrasser l'autre gagne la partie.
-Voici les étapes pour commencer la partie :""")
-        nb_alliance = int(input("1. Choisissez le nombre de personnages de l'Alliance (max 5): "))
-        print("2. Choisissez les classes des personnages de l'Alliance")
+        nb_alliance = int(input("3. Choisissez le nombre de personnages de l'Alliance (max 5): "))
+        print("4. Choisissez les classes des personnages de l'Alliance")
         print(f"Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}")
         for i in range(nb_alliance):
             res = False
@@ -58,8 +58,8 @@ Voici les étapes pour commencer la partie :""")
                     print(f"""Choisissez une classe disponible.
 Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}""")
                     
-        nb_horde = int(input("3. Choisissez le nombre de personnages de la Horde (max 5): "))
-        print("4. Choisissez les classes des personnages de la Horde")
+        nb_horde = int(input("5. Choisissez le nombre de personnages de la Horde (max 5): "))
+        print("6. Choisissez les classes des personnages de la Horde")
         print(f"Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}")
         for i in range(nb_horde):
             res = False

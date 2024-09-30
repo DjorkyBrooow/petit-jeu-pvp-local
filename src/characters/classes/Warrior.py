@@ -38,6 +38,10 @@ class Warrior(Class):
     super().move(x, y)
     pass
   
+  def start_turn(self) -> None:
+    super().start_turn()
+    pass
+  
   def end_of_turn(self) -> None:
     super().end_of_turn()
     pass
