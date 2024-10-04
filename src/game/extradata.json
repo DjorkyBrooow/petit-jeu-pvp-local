@@ -1,0 +1,66 @@
+{
+    "directionalControls": {
+      "w": "north",
+      "a": "west",
+      "s": "south",
+      "d": "east"
+    },
+    "titleText":[
+    "┌───────┐           ┌───────┐",
+    "│ ┌───┐ │           │ ┌───┐ │",
+    "│ │   │ │           │ │   │ │",
+    "│ └───┘ │  _     _  │ └───┘ │",
+    "│ ┌─────┘  \\\\   //  │ ┌─────┘",
+    "│ │         \\\\_//   │ │      ",
+    "│ │          \\_/    │ │      ",
+    "└─┘                 └─┘      "],
+  "mainMenuText": "Appuyez sur une touche pour commencer.",
+  "mainMenuText2": "Appuyez sur x pour quitter ou c pour modifier les paramètres.",
+
+
+  "optionsTitleText": "Customize Game:",
+  "optionsText": [
+    {
+      "name": "Change map height",
+      "id": "mapHeight",
+      "save": true,
+      "default": 7,
+      "choice": 7,
+      "selected": true
+    },
+    {
+      "name": "Change map width",
+      "id": "mapWidth",
+      "save": true,
+      "default": 16,
+      "choice": 16,
+      "selected": false
+    },
+    {
+      "name": "Change alliance players",
+      "id": "change_alliance_players",
+      "save": true,
+      "default": 2,
+      "choice": 2,
+      "selected": false
+    },
+    {
+      "name": "Change horde players",
+      "id": "change_horde_players",
+      "save": true,
+      "default": 2,
+      "choice": 2,
+      "selected": false
+    }
+  ],
+
+
+  "startGameText": "Vous avez lancé une partie de JdR PvP. Deux équipes vont s'affronter, la première à terrasser l'autre gagne la partie. Voici les étapes pour commencer la partie :",
+  "step1": "1. Choisissez les classes des personnages de l'Alliance",
+  "step2": "2. Choisissez les classes des personnages de la Horde",
+  "availableClasses": "Les classes disponibles sont les suivantes : ",
+
+
+  "goodbyeText": "Merci d'avoir joué !", 
+  "goodbyeText2": " Au revoir !"
+}
