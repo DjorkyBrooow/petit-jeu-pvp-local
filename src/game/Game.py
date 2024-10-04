@@ -1,3 +1,4 @@
+import time
 from characters.Class import Class
 from characters.classes import *
 from game.Square import Square
@@ -13,12 +14,20 @@ class Game:
     data: dict
     nb_alliance: int
     nb_horde: int
+    stdscr: curses.window
     
-    def __init__(self) -> None:
+    def __init__(self, stdscr: curses.window) -> None:
         self.data = Game.load_data()
-        self.map = Map(self.data["optionsText"][0]["default"], self.data["optionsText"][1]["default"])
-        self.nb_alliance = self.data["optionsText"][2]["default"]
-        self.nb_horde = self.data["optionsText"][3]["default"]
+        self.map = Map(self.data["optionsText"][0]["choice"], self.data["optionsText"][1]["choice"])
+        self.nb_alliance = self.data["optionsText"][2]["choice"]
+        self.nb_horde = self.data["optionsText"][3]["choice"]
+        self.stdscr = stdscr
+
+        # COLORS
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        WHITE_ON_BLACK = curses.color_pair(1)
+        BLACK_ON_WHITE = curses.color_pair(2)
 
     def start_game(self) -> None:
         self.chose_characters()
@@ -31,46 +40,126 @@ class Game:
         #     pass
     
     def chose_characters(self) -> None:
-        charWidth = len(max(Class.AVAILABLE_CLASSES, key=len))
-        charHeight = len(Class.AVAILABLE_CLASSES) + 1
+        self.stdscr.clear()
+        self.stdscr.refresh()
+
+        all_classes = Class.AVAILABLE_CLASSES
+        maxlen = len(max(all_classes, key=len))
+        nb_classes = len(all_classes)
+
+        # Window char selection
+        charWidth = maxlen
+        charHeight = nb_classes + 1
         x = int(round((curses.COLS-1)/2) - round(charWidth/2))
         y = int(round((curses.LINES-1)/2) - round(charHeight/2))
-        char_win = curses.newwin(charHeight, charWidth, y, x)
-        for i in range (len(Class.AVAILABLE_CLASSES)):
-            char_win.addstr(i, 0, Class.AVAILABLE_CLASSES[i])
+        char_win = curses.newwin(charHeight, charWidth + 2, y, x - 1)
+        for i in range (nb_classes):
+            char_win.addstr(i, int(round((charWidth+2)/2) - round(len(all_classes[i])/2)), all_classes[i])
+
+        # Alliance selection 
+        title = self.data["step1"]
+        xt = int(round((curses.COLS-1)/2) - round(len(title)/2))
+        yt = y - 3
+        winTitle = curses.newwin(2, len(title), yt, xt)
+        winTitle.addstr(0, 0, title)
+
         char_win.refresh()
-        char_win.getch()
+        winTitle.refresh()
+        
+        index = 0
+        char_win.chgat(index, 0, curses.A_REVERSE)
+        nb_alliance_choosen = 0
+        while nb_alliance_choosen < self.nb_alliance:
+            key = char_win.getkey()
+            if key == 'z':
+                char_win.chgat(index, 0, curses.A_NORMAL)
+                if index == 0:
+                    index = nb_classes - 1
+                else:
+                    index -= 1
+                char_win.chgat(index, 0, curses.A_REVERSE)
+            elif key == 's':
+                char_win.chgat(index, 0, curses.A_NORMAL)
+                if index == nb_classes - 1:
+                    index = 0
+                else:
+                    index += 1
+                char_win.chgat(index, 0, curses.A_REVERSE)
+            elif key == '\n':
+                char = globals()[all_classes[index].capitalize()]
+                self.alliance_list.append(char(Faction.ALLIANCE))
+                nb_alliance_choosen += 1
+                text = 'Choosen class : ' + all_classes[index]
+                choice_win = curses.newwin(1, len(text) + 1, y - 2, int(round((curses.COLS-1)/2) - round(len(text)/2)))
+                choice_win.addstr(0, 0, text)
+                choice_win.refresh()
+            char_win.refresh()
+        
+        time.sleep(1)
+        # Clear screen 
+        winTitle.clear()
+        choice_win.clear()
+        char_win.clear()
 
+        winTitle.refresh()
+        choice_win.refresh()
+        char_win.refresh()
+        
+        time.sleep(0.5)
 
-#         nb_alliance = int(input("3. Choisissez le nombre de personnages de l'Alliance (max 5): "))
-#         print("4. Choisissez les classes des personnages de l'Alliance")
-#         print(f"Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}")
-#         for i in range(nb_alliance):
-#             res = False
-#             while not res:
-#                 choice = input(f"Choisissez la classe du personnage {i+1} : ")
-#                 if choice.lower() in [x.lower() for x in Class.AVAILABLE_CLASSES]:
-#                     class_ = globals()[choice.capitalize()]
-#                     self.alliance_list.append(class_(Faction.ALLIANCE))
-#                     res = True
-#                 else:
-#                     print(f"""Choisissez une classe disponible.
-# Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}""")
-                    
-#         nb_horde = int(input("5. Choisissez le nombre de personnages de la Horde (max 5): "))
-#         print("6. Choisissez les classes des personnages de la Horde")
-#         print(f"Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}")
-#         for i in range(nb_horde):
-#             res = False
-#             while not res:
-#                 choice = input(f"Choisissez la classe du personnage {i+1} : ")
-#                 if choice.lower() in  [x.lower() for x in Class.AVAILABLE_CLASSES]:
-#                     class_ = globals()[choice.capitalize()]
-#                     self.horde_list.append(class_(Faction.HORDE))
-#                     res = True
-#                 else:
-#                     print(f"""Choisissez une classe disponible.
-# Les classes disponibles sont les suivantes : {', '.join(Class.AVAILABLE_CLASSES)}""")
+        # Horde selection
+        for i in range (nb_classes):
+            char_win.addstr(i, int(round((charWidth+2)/2) - round(len(all_classes[i])/2)), all_classes[i])
+        char_win.chgat(index, 0, curses.A_REVERSE)
+        
+        title = self.data["step2"]
+        xt = int(round((curses.COLS-1)/2) - round(len(title)/2))
+        yt = y - 3
+        winTitle.addstr(0, 0, title)
+
+        char_win.refresh()
+        winTitle.refresh()
+
+        nb_horde_choosen = 0
+        while nb_horde_choosen < self.nb_horde:
+            key = char_win.getkey()
+            if key == 'z':
+                char_win.chgat(index, 0, curses.A_NORMAL)
+                if index == 0:
+                    index = nb_classes - 1
+                else:
+                    index -= 1
+                char_win.chgat(index, 0, curses.A_REVERSE)
+            elif key == 's':
+                char_win.chgat(index, 0, curses.A_NORMAL)
+                if index == nb_classes - 1:
+                    index = 0
+                else:
+                    index += 1
+                char_win.chgat(index, 0, curses.A_REVERSE)
+            elif key == '\n':
+                char = globals()[all_classes[index].capitalize()]
+                self.horde_list.append(char(Faction.HORDE))
+                nb_horde_choosen += 1
+                text = 'Classe choisie : ' + all_classes[index]
+                choice_win = curses.newwin(1, len(text) + 1, y - 2, int(round((curses.COLS-1)/2) - round(len(text)/2)))
+                choice_win.clear()
+                choice_win.addstr(0, 0, text)
+                choice_win.refresh()
+        
+            char_win.refresh()
+        
+        newwin = curses.newwin(curses.LINES -1, curses.COLS-1, 0, 0)
+        newwin.clear()
+        newwin.addstr(0, 0, "Vos personnages sont pour l'alliance:")
+        for i in range(len(self.alliance_list)):
+            newwin.addstr(i+1, 0, f"{i+1}. {self.alliance_list[i]}")
+        newwin.addstr(len(self.alliance_list)+1, 0, "Vos personnages sont pour la horde:")
+        for i in range(len(self.horde_list)):
+            newwin.addstr(i+len(self.alliance_list)+2, 0, f"{i+1}. {self.horde_list[i]}")
+        newwin.refresh()
+        newwin.getch()
+
 
     def game_in_progress(self) -> bool:
         for elem in self.alliance_list:

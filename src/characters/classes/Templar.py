@@ -36,6 +36,9 @@ class Templar(Class):
     # And damages ennemies
     super().skill_2()
   
+  def start_turn(self) -> None:
+    super().start_turn()
+  
   
   def auto_attack(self, target: Class) -> None:
     super().auto_attack(target)

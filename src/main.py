@@ -61,8 +61,7 @@ def launch_game(stdscr):
     if key == 'c':
         pass
     else:
-        stdscr.clear()
-        game = Game()
+        game = Game(stdscr)
         game.data = data
         game.start_game()
         return
@@ -70,6 +69,10 @@ def launch_game(stdscr):
 
 
 def main(stdscr):
+    # COLORS
+    curses.start_color()
+    curses.use_default_colors()
+    curses.curs_set(0)
     try:
         launch_game(stdscr)
         #when game ends quit curses

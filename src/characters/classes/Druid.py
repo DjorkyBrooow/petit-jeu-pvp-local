@@ -42,6 +42,9 @@ class Druid(Class):
     # Eagle : Throws a rock from the sky 
     super().skill_2()
   
+  def start_turn(self) -> None:
+    super().start_turn()
+  
   
   def auto_attack(self, target: Class) -> None:
     super().auto_attack(target)

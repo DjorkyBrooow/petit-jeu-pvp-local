@@ -32,6 +32,9 @@ class Summoner(Class):
     # While shield is active, it irradiates and deals damage
     super().skill_2()
   
+  def start_turn(self) -> None:
+    super().start_turn()
+  
   
   def auto_attack(self, target: Class) -> None:
     super().auto_attack(target)
