@@ -14,8 +14,8 @@ class Cyborg(Class):
   max_overcharge: int = 5
   current_overcharge: int = 0
 
-  def __init__(self) -> None:
-    super().__init__()
+  def __init__(self, faction) -> None:
+    super().__init__(faction)
 
   def passive(self) -> None:
     # Can overcharge if too many abilities are used in a short amount of time

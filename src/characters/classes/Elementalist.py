@@ -21,8 +21,8 @@ class Elementalist(Class):
   cooldown_skill_2 = 5
   current_element: Element = Element.NO_ELEMENT 
 
-  def __init__(self) -> None:
-    super().__init__()
+  def __init__(self, faction) -> None:
+    super().__init__(faction)
 
   def passive(self) -> None:
     # After changing element

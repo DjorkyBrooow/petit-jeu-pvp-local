@@ -11,8 +11,8 @@ class Necromancer(Class):
   cooldown_skill_1 = 5
   cooldown_skill_2 = 4
 
-  def __init__(self) -> None:
-    super().__init__()
+  def __init__(self, faction) -> None:
+    super().__init__(faction)
 
   def passive(self) -> None:
     # Each time an ennemy dies, he appears again as a living dead

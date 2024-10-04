@@ -11,8 +11,8 @@ class Summoner(Class):
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
 
-  def __init__(self) -> None:
-    super().__init__()
+  def __init__(self, faction) -> None:
+    super().__init__(faction)
 
   def passive(self) -> None:
     # Can have only 1 summon at a time 

@@ -19,8 +19,8 @@ class Druid(Class):
   cooldown_skill_2 = 3
   current_form = Form.HUMAN
 
-  def __init__(self) -> None:
-    super().__init__()
+  def __init__(self, faction) -> None:
+    super().__init__(faction)
 
   def passive(self) -> None:
     # Each time he changes his format

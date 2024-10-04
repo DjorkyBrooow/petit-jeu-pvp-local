@@ -71,21 +71,21 @@ class Game:
         nb_alliance_choosen = 0
         while nb_alliance_choosen < self.nb_alliance:
             key = char_win.getkey()
-            if key == 'z':
+            if key == 'z' or key == curses.KEY_UP:
                 char_win.chgat(index, 0, curses.A_NORMAL)
                 if index == 0:
                     index = nb_classes - 1
                 else:
                     index -= 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == 's':
+            elif key == 's' or key == curses.KEY_DOWN:
                 char_win.chgat(index, 0, curses.A_NORMAL)
                 if index == nb_classes - 1:
                     index = 0
                 else:
                     index += 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == '\n':
+            elif key == '\n' or key == 'PADENTER':
                 char = globals()[all_classes[index].capitalize()]
                 self.alliance_list.append(char(Faction.ALLIANCE))
                 nb_alliance_choosen += 1
@@ -123,21 +123,21 @@ class Game:
         nb_horde_choosen = 0
         while nb_horde_choosen < self.nb_horde:
             key = char_win.getkey()
-            if key == 'z':
+            if key == 'z' or key == curses.KEY_UP:
                 char_win.chgat(index, 0, curses.A_NORMAL)
                 if index == 0:
                     index = nb_classes - 1
                 else:
                     index -= 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == 's':
+            elif key == 's' or key == curses.KEY_DOWN:
                 char_win.chgat(index, 0, curses.A_NORMAL)
                 if index == nb_classes - 1:
                     index = 0
                 else:
                     index += 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == '\n':
+            elif key == '\n' or key == 'PADENTER':
                 char = globals()[all_classes[index].capitalize()]
                 self.horde_list.append(char(Faction.HORDE))
                 nb_horde_choosen += 1
