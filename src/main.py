@@ -21,10 +21,17 @@ def display_main_menu(data):
     for i in range(0, len(title)):
         titleWindow.addstr(i, 0, title[i])
 
+    startGameText = data["startGameText"]
+    xs = int(round((curses.COLS-1)/2) - round(len(max(startGameText, key=len)) / 2))
+    ys = y - 5
+    startGameWindow = curses.newwin(3, len(max(startGameText, key=len)) + 1, ys, xs)
+    for i in range(0, len(startGameText)):
+        startGameWindow.addstr(i, int(round((len(max(startGameText, key=len))-1)/2) - round(len(startGameText[i])/2)), startGameText[i])
+
     mainMenuText = data["mainMenuText"]
     x1 = int(round((curses.COLS-1)/2) - round(len(mainMenuText)/2))
-    y1 = y + titleHeight+ 1
-    mainMenuWindow1 = curses.newwin(1, len(mainMenuText)+1, y1, x1)
+    y1 = y + titleHeight + 1
+    mainMenuWindow1 = curses.newwin(1, len(mainMenuText) + 1, y1, x1)
     mainMenuWindow1.addstr(0, 0, mainMenuText)
 
     mainMenuText2 = data["mainMenuText2"]
@@ -33,15 +40,25 @@ def display_main_menu(data):
     mainMenuWindow2 = curses.newwin(1, len(mainMenuText2) + 1, y2, x2)
     mainMenuWindow2.addstr(0, 0, mainMenuText2)
 
+    mainMenuText3 = data["mainMenuText3"]
+    x3 = int(round((curses.COLS-1)/2) - round(len(mainMenuText3)/2))
+    y3 = y2 + 1
+    mainMenuWindow3 = curses.newwin(1, len(mainMenuText3) + 1, y3, x3)
+    mainMenuWindow3.addstr(0, 0, mainMenuText3)
+
     titleWindow.refresh()
+    startGameWindow.refresh()
     mainMenuWindow1.refresh()
     mainMenuWindow2.refresh()
+    mainMenuWindow3.refresh()
 
     key = titleWindow.getkey()
 
     titleWindow.clear()
+    startGameWindow.clear()
     mainMenuWindow1.clear()
     mainMenuWindow2.clear()
+    mainMenuWindow3.clear()
 
     return key
 
@@ -50,15 +67,10 @@ def launch_game(stdscr):
     data = Game.load_data()
     key = display_main_menu(data)
 
-    if key == 'x':
-        stdscr.clear()
-        text = data["goodbyeText"]
-        text2 = data["goodbyeText2"]
-        stdscr.addstr(int(round((curses.LINES-1)/2)), int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
-        stdscr.addstr(int(round((curses.LINES-1)/2) + 1), int(round((curses.COLS-1)/2) - round(len(text2)/2)), text2)
-        stdscr.refresh()
-        time.sleep(3)
-    if key == 'c':
+    if key == data["quit"]:
+        Game.exit_game(stdscr, data)
+        return
+    if key == data["custom"]:
         pass
     else:
         game = Game(stdscr)

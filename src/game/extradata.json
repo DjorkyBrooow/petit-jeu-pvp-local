@@ -1,10 +1,14 @@
 {
     "directionalControls": {
-      "w": "north",
-      "a": "west",
+      "z": "north",
+      "q": "west",
       "s": "south",
       "d": "east"
     },
+
+    "startGameText": [
+    "Vous avez lancé une partie de JdR PvP. Deux équipes vont s'affronter,",
+    "la première à terrasser l'autre gagne la partie."],
     "titleText":[
     "┌───────┐           ┌───────┐",
     "│ ┌───┐ │           │ ┌───┐ │",
@@ -15,13 +19,16 @@
     "│ │          \\_/    │ │      ",
     "└─┘                 └─┘      "],
   "mainMenuText": "Appuyez sur une touche pour commencer.",
-  "mainMenuText2": "Appuyez sur x pour quitter ou c pour modifier les paramètres.",
+  "mainMenuText2": "Appuyez sur c pour modifier les paramètres.",
+  "mainMenuText3": "Appuyez sur x pour quitter la partie à tout moment.",
+  "quit": "x",
+  "custom": "c",
 
 
   "optionsTitleText": "Customize Game:",
   "optionsText": [
     {
-      "name": "Change map height",
+      "name": "Changer la hauteur de la carte",
       "id": "mapHeight",
       "save": true,
       "default": 7,
@@ -29,7 +36,7 @@
       "selected": true
     },
     {
-      "name": "Change map width",
+      "name": "Changer la largeur de la carte",
       "id": "mapWidth",
       "save": true,
       "default": 16,
@@ -37,7 +44,7 @@
       "selected": false
     },
     {
-      "name": "Change alliance players",
+      "name": "Changer le nombre de personnages de l'alliance",
       "id": "change_alliance_players",
       "save": true,
       "default": 2,
@@ -45,7 +52,7 @@
       "selected": false
     },
     {
-      "name": "Change horde players",
+      "name": "Changer le nombre de personnages de la horde",
       "id": "change_horde_players",
       "save": true,
       "default": 2,
@@ -55,10 +62,15 @@
   ],
 
 
-  "startGameText": "Vous avez lancé une partie de JdR PvP. Deux équipes vont s'affronter, la première à terrasser l'autre gagne la partie. Voici les étapes pour commencer la partie :",
   "step1": "1. Choisissez les classes des personnages de l'Alliance",
   "step2": "2. Choisissez les classes des personnages de la Horde",
   "availableClasses": "Les classes disponibles sont les suivantes : ",
+
+  "choosenAlliance" : "Les personnages de l'alliance choisis sont : ",
+  "choosenHorde" : "Les personnages de la horde choisis sont : ",
+  "validateChoice": "Validez-vous vos choix ? Oui (o) / Non (n)",
+  "yes": "o",
+  "no": "n",
 
 
   "goodbyeText": "Merci d'avoir joué !", 

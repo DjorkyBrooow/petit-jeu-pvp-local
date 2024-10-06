@@ -15,6 +15,11 @@ class Game:
     nb_alliance: int
     nb_horde: int
     stdscr: curses.window
+
+    # Instance variables
+    all_classes = Class.AVAILABLE_CLASSES
+    maxlen = len(max(all_classes, key=len))
+    nb_classes = len(all_classes)
     
     def __init__(self, stdscr: curses.window) -> None:
         self.data = Game.load_data()
@@ -30,7 +35,9 @@ class Game:
         BLACK_ON_WHITE = curses.color_pair(2)
 
     def start_game(self) -> None:
-        self.chose_characters()
+        res = self.chose_characters()
+        if not res:
+            Game.exit_game(self.stdscr, self.data)
         # self.character_list = self.alliance_list + self.horde_list
         # self.character_list.sort(key=lambda x: x.priority, reverse=True)
         # while self.game_in_progress():
@@ -43,122 +50,139 @@ class Game:
         self.stdscr.clear()
         self.stdscr.refresh()
 
-        all_classes = Class.AVAILABLE_CLASSES
-        maxlen = len(max(all_classes, key=len))
-        nb_classes = len(all_classes)
-
         # Window char selection
-        charWidth = maxlen
-        charHeight = nb_classes + 1
+        charWidth = self.maxlen
+        charHeight = self.nb_classes + 1
         x = int(round((curses.COLS-1)/2) - round(charWidth/2))
         y = int(round((curses.LINES-1)/2) - round(charHeight/2))
-        char_win = curses.newwin(charHeight, charWidth + 2, y, x - 1)
-        for i in range (nb_classes):
-            char_win.addstr(i, int(round((charWidth+2)/2) - round(len(all_classes[i])/2)), all_classes[i])
 
-        # Alliance selection 
-        title = self.data["step1"]
+        while True:
+            char_win = curses.newwin(charHeight, charWidth + 2, y, x - 1)
+            for i in range (self.nb_classes):
+                char_win.addstr(i, int(round((charWidth+2)/2) - round(len(self.all_classes[i])/2)), self.all_classes[i])
+            char_win.refresh()
+
+            alliance_text = self.data["choosenAlliance"]
+            choice_alliance_win = curses.newwin(2 + self.nb_alliance, len(alliance_text) + 1, 0, 0)
+            horde_text = self.data["choosenHorde"]
+            choice_horde_win = curses.newwin(2 + self.nb_horde, len(horde_text) + 1, 0, curses.COLS - 1 - len(horde_text))
+            index = 0
+
+            # Alliance selection 
+            winTitle, index = self.character_selection(
+                title = self.data["step1"],
+                y_title = y,
+                char_win = char_win,
+                faction = Faction.ALLIANCE,
+                choice_win = choice_alliance_win,
+                title_choice = alliance_text,
+                index = index,
+            )
+
+            if index == -1:
+                break
+            
+            time.sleep(1)
+            # Clear screen 
+            winTitle.clear()
+            char_win.clear()
+            winTitle.refresh()
+            char_win.refresh()
+            time.sleep(0.1)
+
+
+            for i in range (self.nb_classes):
+                char_win.addstr(i, int(round((charWidth+2)/2) - round(len(self.all_classes[i])/2)), self.all_classes[i])
+            char_win.chgat(index, 0, curses.A_REVERSE)
+            char_win.refresh()
+
+            # Horde selection
+            winTitle, index = self.character_selection(
+                title = self.data["step2"],
+                y_title = y,
+                char_win = char_win,
+                faction = Faction.HORDE,
+                choice_win = choice_horde_win,
+                title_choice = horde_text,
+                index = index,
+            )
+
+            if index == -1:
+                break
+            
+            text = self.data["validateChoice"]
+            validate_win = curses.newwin(1, curses.COLS - 1, curses.LINES - 5, 0)
+            validate_win.addstr(0, int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+            validate_win.refresh()
+            while True:
+                key  = validate_win.getkey()
+                if key == self.data["yes"] or key == self.data["no"]:
+                    break
+
+            if key == self.data["yes"]:
+                return True
+            elif key == self.data["no"]:
+                index = 0
+                self.alliance_list = []
+                self.horde_list = []
+                self.stdscr.clear()
+                self.stdscr.refresh()
+        return False
+    
+    def character_selection(
+            self, 
+            title: str,
+            y_title: int,
+            char_win: curses.window,
+            faction: Faction,
+            choice_win: curses.window,
+            title_choice: str,
+            index: int,
+        ) -> None:
+        
+        # Title window
         xt = int(round((curses.COLS-1)/2) - round(len(title)/2))
-        yt = y - 3
+        yt = y_title - 3
         winTitle = curses.newwin(2, len(title), yt, xt)
         winTitle.addstr(0, 0, title)
-
-        char_win.refresh()
         winTitle.refresh()
         
-        index = 0
+        choice_win.addstr(0, 0, title_choice+"\n")
+
         char_win.chgat(index, 0, curses.A_REVERSE)
-        nb_alliance_choosen = 0
-        while nb_alliance_choosen < self.nb_alliance:
+        nb_choosen = 0
+        while nb_choosen < self.nb_alliance:
             key = char_win.getkey()
-            if key == 'z' or key == curses.KEY_UP:
+            if key == 'z':
                 char_win.chgat(index, 0, curses.A_NORMAL)
                 if index == 0:
-                    index = nb_classes - 1
+                    index = self.nb_classes - 1
                 else:
                     index -= 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == 's' or key == curses.KEY_DOWN:
+            elif key == 's':
                 char_win.chgat(index, 0, curses.A_NORMAL)
-                if index == nb_classes - 1:
+                if index == self.nb_classes - 1:
                     index = 0
                 else:
                     index += 1
                 char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == '\n' or key == 'PADENTER':
-                char = globals()[all_classes[index].capitalize()]
-                self.alliance_list.append(char(Faction.ALLIANCE))
-                nb_alliance_choosen += 1
-                text = 'Choosen class : ' + all_classes[index]
-                choice_win = curses.newwin(1, len(text) + 1, y - 2, int(round((curses.COLS-1)/2) - round(len(text)/2)))
-                choice_win.addstr(0, 0, text)
-                choice_win.refresh()
+            elif key == '\n':
+                char = globals()[self.all_classes[index].capitalize()]
+                self.alliance_list.append(char(faction))
+                if (faction == Faction.ALLIANCE):
+                    choice_win.addstr(nb_choosen+2, 0, self.all_classes[index])
+                    choice_win.refresh()
+                elif (faction == Faction.HORDE):
+                    choice_win.addstr(nb_choosen+2, 0, self.all_classes[index])
+                    choice_win.refresh()
+                nb_choosen += 1
+            elif key == self.data["quit"]:
+                index = -1
+                break
             char_win.refresh()
+        return winTitle, index
         
-        time.sleep(1)
-        # Clear screen 
-        winTitle.clear()
-        choice_win.clear()
-        char_win.clear()
-
-        winTitle.refresh()
-        choice_win.refresh()
-        char_win.refresh()
-        
-        time.sleep(0.5)
-
-        # Horde selection
-        for i in range (nb_classes):
-            char_win.addstr(i, int(round((charWidth+2)/2) - round(len(all_classes[i])/2)), all_classes[i])
-        char_win.chgat(index, 0, curses.A_REVERSE)
-        
-        title = self.data["step2"]
-        xt = int(round((curses.COLS-1)/2) - round(len(title)/2))
-        yt = y - 3
-        winTitle.addstr(0, 0, title)
-
-        char_win.refresh()
-        winTitle.refresh()
-
-        nb_horde_choosen = 0
-        while nb_horde_choosen < self.nb_horde:
-            key = char_win.getkey()
-            if key == 'z' or key == curses.KEY_UP:
-                char_win.chgat(index, 0, curses.A_NORMAL)
-                if index == 0:
-                    index = nb_classes - 1
-                else:
-                    index -= 1
-                char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == 's' or key == curses.KEY_DOWN:
-                char_win.chgat(index, 0, curses.A_NORMAL)
-                if index == nb_classes - 1:
-                    index = 0
-                else:
-                    index += 1
-                char_win.chgat(index, 0, curses.A_REVERSE)
-            elif key == '\n' or key == 'PADENTER':
-                char = globals()[all_classes[index].capitalize()]
-                self.horde_list.append(char(Faction.HORDE))
-                nb_horde_choosen += 1
-                text = 'Classe choisie : ' + all_classes[index]
-                choice_win = curses.newwin(1, len(text) + 1, y - 2, int(round((curses.COLS-1)/2) - round(len(text)/2)))
-                choice_win.clear()
-                choice_win.addstr(0, 0, text)
-                choice_win.refresh()
-        
-            char_win.refresh()
-        
-        newwin = curses.newwin(curses.LINES -1, curses.COLS-1, 0, 0)
-        newwin.clear()
-        newwin.addstr(0, 0, "Vos personnages sont pour l'alliance:")
-        for i in range(len(self.alliance_list)):
-            newwin.addstr(i+1, 0, f"{i+1}. {self.alliance_list[i]}")
-        newwin.addstr(len(self.alliance_list)+1, 0, "Vos personnages sont pour la horde:")
-        for i in range(len(self.horde_list)):
-            newwin.addstr(i+len(self.alliance_list)+2, 0, f"{i+1}. {self.horde_list[i]}")
-        newwin.refresh()
-        newwin.getch()
 
 
     def game_in_progress(self) -> bool:
@@ -197,6 +221,17 @@ class Game:
         data = json.load(f)
         f.close()
         return data
+    
+    @staticmethod
+    def exit_game(stdscr, data) -> None:
+        stdscr.clear()
+        text = data["goodbyeText"]
+        text2 = data["goodbyeText2"]
+        stdscr.addstr(int(round((curses.LINES-1)/2)), int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+        stdscr.addstr(int(round((curses.LINES-1)/2) + 1), int(round((curses.COLS-1)/2) - round(len(text2)/2)), text2)
+        stdscr.refresh()
+        time.sleep(2)
+        return 
 
 
 class Map():
