@@ -1,9 +1,9 @@
 {
     "directionalControls": {
-      "z": "north",
-      "q": "west",
-      "s": "south",
-      "d": "east"
+      "north": "z",
+      "west": "q",
+      "south": "s",
+      "east": "d"
     },
 
     "startGameText": [
@@ -28,19 +28,19 @@
   "optionsTitleText": "Customize Game:",
   "optionsText": [
     {
-      "name": "Changer la hauteur de la carte",
-      "id": "mapHeight",
-      "save": true,
-      "default": 7,
-      "choice": 7,
-      "selected": true
-    },
-    {
       "name": "Changer la largeur de la carte",
       "id": "mapWidth",
       "save": true,
       "default": 16,
       "choice": 16,
+      "selected": true
+    },
+    {
+      "name": "Changer la hauteur de la carte",
+      "id": "mapHeight",
+      "save": true,
+      "default": 7,
+      "choice": 7,
       "selected": false
     },
     {
@@ -73,6 +73,9 @@
   "no": "n",
 
 
-  "goodbyeText": "Merci d'avoir joué !", 
-  "goodbyeText2": " Au revoir !"
+  "goodbyeText": "Au revoir", 
+  "goodbyeText2": "Merci d'avoir joué !",
+  "goodbyeText3": "Pressez n'importe quelle touche pour quitter",
+
+  "gameStart": "La partie commence"
 }

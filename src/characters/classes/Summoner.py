@@ -10,8 +10,12 @@ class Summoner(Class):
   priority = 2
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
+  passive = ""
+  skill_1 = ""
+  skill_2 = ""
 
   def __init__(self, faction) -> None:
+    Summoner.id += 1
     super().__init__(faction)
 
   def passive(self) -> None:

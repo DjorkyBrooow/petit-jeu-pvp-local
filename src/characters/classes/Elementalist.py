@@ -17,11 +17,15 @@ class Elementalist(Class):
   damage = Damage.VERY_HIGH_DAMAGE
   range = Range.LONG_RANGE
   priority = 4
-  cooldown_skill_1 = 2
+  cooldown_skill_1 = 1
   cooldown_skill_2 = 5
   current_element: Element = Element.NO_ELEMENT 
+  passive = "Maître des éléments"
+  skill_1 = ""
+  skill_2 = "Non disponible"
 
   def __init__(self, faction) -> None:
+    Elementalist.id += 1
     super().__init__(faction)
 
   def passive(self) -> None:
@@ -32,6 +36,7 @@ class Elementalist(Class):
     # water : heals for 2 hp 
     # earth : gives a shield of 2 hp 
     # air : gives 2 additionnal mobility
+    # After changing elements, can cast an auto attack for free
     super().passive()
     
   def skill_1(self) -> None:
@@ -45,6 +50,16 @@ class Elementalist(Class):
     # Fire : launches a fireball in an area that deals damage to ennemies and leaves flames that deal damage each round for 3 rounds
     # Earth : Gives a shield to all allies around for 1 round
     # Air : Increases mobility of all allies around him for 1 round
+    if self.current_element == Element.NO_ELEMENT:
+      self.skill_2 = "Non disponible"
+    elif self.current_element == Element.AIR:
+      self.skill_2 = "Mistral"
+    elif self.current_element == Element.EARTH:
+      self.skill_2 = "Glissement de terrain"
+    elif self.current_element == Element.FIRE:
+      self.skill_2 = "Eruption volcanique"
+    elif self.current_element == Element.WATER:
+      self.skill_2 = "Sources chaudes"
     super().skill_2()
   
   def start_turn(self) -> None:

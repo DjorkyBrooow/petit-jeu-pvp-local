@@ -10,13 +10,18 @@ class Illusionist(Class):
   priority = 3
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
+  passive = ""
+  skill_1 = ""
+  skill_2 = ""
 
   def __init__(self, faction) -> None:
+    Illusionist.id += 1
     super().__init__(faction)
 
   def passive(self) -> None:
     # When the illusionist gets below 25% hp 
-    # He gets immune for 1 round
+    # He gets invulnerable for 1 round
+    # If damages should kill him for the first time he survives at 1hp
     super().passive()
     
   def skill_1(self) -> None:
@@ -28,7 +33,7 @@ class Illusionist(Class):
   def skill_2(self) -> None:
     # The illusionist dashes in an area
     # Deals damage
-    # Comes back at his original place at the next round
+    # Comes back at his original place at the start of the next round
     super().skill_2()
   
   def start_turn(self) -> None:

@@ -16,10 +16,10 @@ class Class(ABC):
     is_alive: bool
     critical_rate: float = 0.1
     critical_hit: float = 1.4
+    direction: Direction
 
     # Unique stats
     max_hp : Health
-    direction: Direction
     mobility: Mobility
     damage: Damage
     range: Range
@@ -162,9 +162,6 @@ class Class(ABC):
 
     @abstractmethod
     def move(self, x: int, y: int) -> None:
-        # if self.x_coord == 0 and coords[0] < 0 or self.y_coord == 0 and coords[1] < 0:
-        #     print ("Déplacement impossible hors des limites du terrain")
-        # else:
         self.x_coord += x
         self.y_coord += y
         self.current_mobility -= 1
@@ -221,7 +218,16 @@ class Class(ABC):
         if source_id in self.poison_counters:
             del self.poison_counters[source_id]
             print(f"The poison of {source_id} has expired or has been cleansed")
+    
+    #########################
+    #                       #
+    #  GETTERS AND SETTERS  #
+    #                       #
+    #########################
 
-
+    def set_coords(self, x, y) -> None:
+        self.x_coord = x
+        self.y_coord = y
+    
     def get_total_poison(self) -> int:
         return sum(self.poison_counters.values())

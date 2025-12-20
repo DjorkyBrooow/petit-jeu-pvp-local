@@ -70,7 +70,7 @@ def launch_game(stdscr):
     if key == data["quit"]:
         Game.exit_game(stdscr, data)
         return
-    if key == data["custom"]:
+    elif key == data["custom"]:
         pass
     else:
         game = Game(stdscr)
@@ -95,7 +95,7 @@ def main(stdscr):
     curses.curs_set(0)
     try:
         launch_game(stdscr)
-        #when game ends quit curses
+        # when game ends quit curses
         curses.endwin()
     #quit curses and print exception if there was an error
     except Exception:

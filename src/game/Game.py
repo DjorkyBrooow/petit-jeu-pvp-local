@@ -31,22 +31,31 @@ class Game:
         # COLORS
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_RED)
+        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_RED)
         WHITE_ON_BLACK = curses.color_pair(1)
         BLACK_ON_WHITE = curses.color_pair(2)
+        BLACK_ON_RED = curses.color_pair(3)
+        RED_ON_BLACK = curses.color_pair(4)
 
     def start_game(self) -> None:
         res = self.chose_characters()
         if not res:
             Game.exit_game(self.stdscr, self.data)
-        # self.character_list = self.alliance_list + self.horde_list
-        # self.character_list.sort(key=lambda x: x.priority, reverse=True)
-        # while self.game_in_progress():
-        #     for character in self.character_list:
-        #         if character.is_alive:
-        #             character.play_turn()
-        #     pass
+        self.initialize_characters()
+        self.update_map()
+        gameStartText = self.data["gameStart"]
+        self.display_map(gameStartText)
+        round = 1
+        while self.game_in_progress():
+            for character in self.character_list:
+                if character.is_alive:
+                    character.current_mobility = character.mobility
+                    self.play_turn(character)
+            round += 1
+            pass
     
-    def chose_characters(self) -> None:
+    def chose_characters(self) -> bool:
         self.stdscr.clear()
         self.stdscr.refresh()
 
@@ -74,6 +83,8 @@ class Game:
                 y_title = y,
                 char_win = char_win,
                 faction = Faction.ALLIANCE,
+                faction_list = self.alliance_list,
+                nb_faction= self.nb_alliance,
                 choice_win = choice_alliance_win,
                 title_choice = alliance_text,
                 index = index,
@@ -82,7 +93,6 @@ class Game:
             if index == -1:
                 break
             
-            time.sleep(1)
             # Clear screen 
             winTitle.clear()
             char_win.clear()
@@ -102,6 +112,8 @@ class Game:
                 y_title = y,
                 char_win = char_win,
                 faction = Faction.HORDE,
+                faction_list = self.horde_list,
+                nb_faction= self.nb_horde,
                 choice_win = choice_horde_win,
                 title_choice = horde_text,
                 index = index,
@@ -135,6 +147,8 @@ class Game:
             y_title: int,
             char_win: curses.window,
             faction: Faction,
+            faction_list: list,
+            nb_faction: int,
             choice_win: curses.window,
             title_choice: str,
             index: int,
@@ -151,7 +165,7 @@ class Game:
 
         char_win.chgat(index, 0, curses.A_REVERSE)
         nb_choosen = 0
-        while nb_choosen < self.nb_alliance:
+        while nb_choosen < nb_faction:
             key = char_win.getkey()
             if key == 'z':
                 char_win.chgat(index, 0, curses.A_NORMAL)
@@ -169,7 +183,7 @@ class Game:
                 char_win.chgat(index, 0, curses.A_REVERSE)
             elif key == '\n':
                 char = globals()[self.all_classes[index].capitalize()]
-                self.alliance_list.append(char(faction))
+                faction_list.append(char(faction))
                 if (faction == Faction.ALLIANCE):
                     choice_win.addstr(nb_choosen+2, 0, self.all_classes[index])
                     choice_win.refresh()
@@ -182,15 +196,69 @@ class Game:
                 break
             char_win.refresh()
         return winTitle, index
+    
+    def initialize_characters(self) -> None:
+        self.character_list = self.alliance_list + self.horde_list
+        self.character_list.sort(key=lambda x: x.priority, reverse=True)
+        for index in range (len(self.alliance_list)):
+            self.alliance_list[index].set_coords(x = 0, y = int((self.map.height - len(self.alliance_list)) / 2 + 2*index))
+        for index in range (len(self.horde_list)):
+            self.horde_list[index].set_coords(x = self.map.width - 1, y = int((self.map.height - len(self.horde_list)) / 2 + 2*index))
+
         
+    def display_map(self, text) -> None :
+        listmap = self.map.str_to_list()
+        self.stdscr.clear()
+        
+        #calculate where to place the map
+        mapWidth = 4*self.map.width+1
+        mapHeight = 4*self.map.height+1
+        x = int(round((curses.COLS-1)/2) - round(mapWidth/2))
+        y = int(round((curses.LINES-1)/2) - round(mapHeight/2))
+        #create window for map
+        mapWindow = curses.newwin(mapHeight, mapWidth, y, x)
+        
+        self.stdscr.addstr(2, int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+        for index in range (len(listmap)):
+            mapWindow.addstr(index, 0, listmap[index])
+        mapWindow.refresh()
+        mapWindow.getch()
+        
+    def play_turn(self, character : Class) -> None:
+        index = 0
+        self.stdscr.addstr(0, 0, f"mobility : {character.mobility} -- current_mobility : {character.current_mobility}")
+        while True:
+            action = self.stdscr.getkey()
+            self.stdscr.addstr(0, 0, f"Tour {index} -- Action : {action} -- Coordonnées {character.content} ({character.x_coord}; {character.y_coord})")
+            self.stdscr.refresh()
+            if character.current_mobility.value > 0:
+                if action == self.data["directionalControls"]["north"]:
+                    character.move(0, -1)
+                elif action == self.data["directionalControls"]["west"]:
+                    character.move(-1, 0)
+                elif action == self.data["directionalControls"]["south"]:
+                    character.move(0, 1)
+                elif action == self.data["directionalControls"]["east"]:
+                    character.move(1, 0)
+            if action == "p":
+                break
+            elif action == "x":
+                Game.exit_game(self.stdscr, self.data)
+                break
+            self.update_map()
+            self.stdscr.refresh()
+            index += 1
+            
+            
+        pass
 
 
     def game_in_progress(self) -> bool:
         for elem in self.alliance_list:
-            if elem.is_alive():
+            if elem.is_alive:
                 return True
         for elem in self.horde_list:
-            if elem.is_alive():
+            if elem.is_alive:
                 return True    
         return False
     
@@ -209,7 +277,7 @@ class Game:
         return ret
     
     def update_map(self) -> None:
-        self.map.reset_map()
+        # self.map.reset_map_content()
         for elem in self.character_list:
             self.map.square_list[(elem.x_coord, elem.y_coord)].content = elem.content
 
@@ -227,10 +295,12 @@ class Game:
         stdscr.clear()
         text = data["goodbyeText"]
         text2 = data["goodbyeText2"]
-        stdscr.addstr(int(round((curses.LINES-1)/2)), int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
-        stdscr.addstr(int(round((curses.LINES-1)/2) + 1), int(round((curses.COLS-1)/2) - round(len(text2)/2)), text2)
+        text3 = data["goodbyeText3"]
+        stdscr.addstr(int(round((curses.LINES-1)/2) - 1), int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+        stdscr.addstr(int(round((curses.LINES-1)/2)), int(round((curses.COLS-1)/2) - round(len(text2)/2)), text2)
+        stdscr.addstr(int(round((curses.LINES-1)/2) + 1), int(round((curses.COLS-1)/2) - round(len(text3)/2)), text3)
         stdscr.refresh()
-        time.sleep(2)
+        stdscr.getch()
         return 
 
 
@@ -248,10 +318,14 @@ class Map():
                 self.square_list[(i,j)] = Square(i, j)
         pass
 
-    def reset_map(self) -> None:
+    def reset_map_content(self) -> None:
         for i in range(self.width):
             for j in range(self.height):
                 self.square_list[(i,j)].reset_content()
+    
+    def str_to_list(self) -> list:
+        ret = str(self).split("\n")
+        return ret
 
     def __str__(self) -> str:
         ret = ""

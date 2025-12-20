@@ -8,22 +8,28 @@ class Gravedigger(Class):
   damage = Damage.MID_DAMAGE
   range = Range.CLOSE_RANGE
   priority = 1
-  cooldown_skill_1 = 3
+  cooldown_skill_1 = 2
   cooldown_skill_2 = 3
+  passive = ""
+  skill_1 = ""
+  skill_2 = ""
 
   def __init__(self, faction) -> None:
+    Gravedigger.id += 1
     super().__init__(faction)
 
   def passive(self) -> None:
     # Each time a character dies
     # The gravedigger gains permanent damage and max_hp
     # At the beginning of the game
-    # A random ennemy character is  designed
+    # A random ennemy character is designated
     # At the death of this character, the gravedigger doubles the previous bonus
     super().passive()
     
   def skill_1(self) -> None:
     # Hits an ennemy with his shovel
+    # Heals hp with each hit
+    # Heal is increased if target is low hp
     # Damages are increased if the target is low hp
     super().skill_1()
   

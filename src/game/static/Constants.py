@@ -11,15 +11,15 @@ class Health(Enum):
     VERY_LOW_HP: int = 15
     LOW_HP: int = 17
     MID_HP: int = 20
-    HIGH_HP: int= 23
+    HIGH_HP: int = 23
     VERY_HIGH_HP: int = 27
     
 class Mobility(Enum):
     VERY_LOW_MOBILITY: int = 2
     LOW_MOBILITY: int = 3
     MID_MOBILITY: int = 4
-    HIGH_MOBILITY: int= 5
-    VERY_HIGH_MOBILITY: int= 6
+    HIGH_MOBILITY: int = 5
+    VERY_HIGH_MOBILITY: int = 6
     
 class Range(Enum):
     CLOSE_RANGE: int = 1

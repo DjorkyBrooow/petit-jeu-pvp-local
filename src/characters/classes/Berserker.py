@@ -10,13 +10,16 @@ class Berserker(Class):
   priority = 17
   cooldown_skill_1 = 5
   cooldown_skill_2 = 2
+  passive = "Ce qui ne me tue pas me rend plus fort"
+  skill_1 = "Rage du berserker"
+  skill_2 = "Lancer de hache"
 
   def __init__(self, faction) -> None:
     Berserker.id += 1
     super().__init__(faction)
     
   def passive(self) -> None:
-    # When hit, increase damage and mobility for 1 round
+    # When hit, increase damage and mobility for the next round
     super().passive()
 
   def skill_1(self) -> None:

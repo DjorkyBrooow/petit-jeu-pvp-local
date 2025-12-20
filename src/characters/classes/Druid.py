@@ -6,7 +6,7 @@ from enum import Enum
 class Form(Enum):
   HUMAN = 0
   BEAR = 1 
-  BIRD = 2
+  EAGLE = 2
   
 class Druid(Class):
   
@@ -18,12 +18,16 @@ class Druid(Class):
   cooldown_skill_1 = 1
   cooldown_skill_2 = 3
   current_form = Form.HUMAN
+  passive = "Changeforme"
+  skill_1 = "Appel de la nature"
+  skill_2 = "Restauration"
 
   def __init__(self, faction) -> None:
+    Druid.id += 1
     super().__init__(faction)
 
   def passive(self) -> None:
-    # Each time he changes his format
+    # Each time he changes his form
     # The druid retrieves 2 HP
     # Default form : human
     super().passive()
@@ -34,6 +38,12 @@ class Druid(Class):
     # Changes stats 
     # Bear : very high hp, low mobility, very low damage, close Range
     # Eagle : very low hp, very high mobility, high damage, mid close range
+    if self.current_form == Form.HUMAN:
+      self.skill_2 = "Restauration"
+    elif self.current_form == Form.BEAR:
+      self.skill_2 = "Provocation"
+    elif self.current_form == Form.EAGLE:
+      self.skill_2 = "Lâcher de rocher"
     super().skill_1()
   
   def skill_2(self) -> None:
