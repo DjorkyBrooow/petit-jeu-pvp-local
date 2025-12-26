@@ -10,9 +10,9 @@ class Ranger(Class):
   priority = 16
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  passive_name = "Tireur d'élite"
+  skill_1_name = "Tir perforant"
+  skill_2_name = "Exécution des faibles"
 
   def __init__(self, faction) -> None:
     Ranger.id += 1

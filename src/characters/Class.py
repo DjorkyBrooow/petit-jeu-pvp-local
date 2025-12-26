@@ -25,11 +25,11 @@ class Class(ABC):
     range: Range
     priority: int
     name: str
-    passive: str
+    passive_name: str
     cooldown_passive: int
-    skill_1: str
+    skill_1_name: str
     cooldown_skill_1: int
-    skill_2: str
+    skill_2_name: str
     cooldown_skill_2: int
     x_coord: int
     y_coord: int
@@ -109,12 +109,11 @@ class Class(ABC):
 
     @abstractmethod 
     def auto_attack(self, target: 'Class') -> None:
-      damage = self.damage
-      rng = random.randrange(100)
-      if rng <= self.critical_rate * 100:
-        damage *= self.critical_hit
-      target.suffer_damage('Attaque auto', damage)
-      print (f"{self.name} a lancé 'Attaque auto' sur {target.name}")
+        damage = self.current_damage
+        rng = random.randrange(100)
+        if rng <= self.critical_rate * 100:
+            damage *= self.critical_hit
+        target.suffer_damage('Auto-attack', damage)
     
     @abstractmethod
     def suffer_damage(self, source: str, damage: int) -> None:
@@ -225,7 +224,7 @@ class Class(ABC):
     #                       #
     #########################
 
-    def set_coords(self, x, y) -> None:
+    def set_coords(self, x: int, y: int) -> None:
         self.x_coord = x
         self.y_coord = y
     

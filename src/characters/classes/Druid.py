@@ -18,9 +18,9 @@ class Druid(Class):
   cooldown_skill_1 = 1
   cooldown_skill_2 = 3
   current_form = Form.HUMAN
-  passive = "Changeforme"
-  skill_1 = "Appel de la nature"
-  skill_2 = "Restauration"
+  passive_name = "Changeforme"
+  skill_1_name = "Appel de la nature"
+  skill_2_name = "Restauration"
 
   def __init__(self, faction) -> None:
     Druid.id += 1
@@ -39,11 +39,11 @@ class Druid(Class):
     # Bear : very high hp, low mobility, very low damage, close Range
     # Eagle : very low hp, very high mobility, high damage, mid close range
     if self.current_form == Form.HUMAN:
-      self.skill_2 = "Restauration"
+      self.skill_2_name = "Restauration"
     elif self.current_form == Form.BEAR:
-      self.skill_2 = "Provocation"
+      self.skill_2_name = "Provocation"
     elif self.current_form == Form.EAGLE:
-      self.skill_2 = "Lâcher de rocher"
+      self.skill_2_name = "Lâcher de rocher"
     super().skill_1()
   
   def skill_2(self) -> None:

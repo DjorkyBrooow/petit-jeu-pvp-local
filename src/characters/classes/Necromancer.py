@@ -10,9 +10,9 @@ class Necromancer(Class):
   priority = 8
   cooldown_skill_1 = 5
   cooldown_skill_2 = 4
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  passive_name = ""
+  skill_1_name = ""
+  skill_2_name = ""
 
   def __init__(self, faction) -> None:
     Necromancer.id += 1

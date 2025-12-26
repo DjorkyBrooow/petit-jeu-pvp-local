@@ -20,9 +20,9 @@ class Elementalist(Class):
   cooldown_skill_1 = 1
   cooldown_skill_2 = 5
   current_element: Element = Element.NO_ELEMENT 
-  passive = "Maître des éléments"
-  skill_1 = ""
-  skill_2 = "Non disponible"
+  passive_name = "Maître des éléments"
+  skill_1_name = "Menace élémentaire"
+  skill_2_name = "Non disponible"
 
   def __init__(self, faction) -> None:
     Elementalist.id += 1
@@ -43,6 +43,16 @@ class Elementalist(Class):
     # Changes current element : 
     # Water, air, fire, earth 
     # Default : no element
+    if self.current_element == Element.NO_ELEMENT:
+      self.skill_2_name = "Non disponible"
+    elif self.current_element == Element.AIR:
+      self.skill_2_name = "Mistral"
+    elif self.current_element == Element.EARTH:
+      self.skill_2_name = "Glissement de terrain"
+    elif self.current_element == Element.FIRE:
+      self.skill_2_name = "Eruption volcanique"
+    elif self.current_element == Element.WATER:
+      self.skill_2_name = "Sources chaudes"
     super().skill_1()
   
   def skill_2(self) -> None:
@@ -50,16 +60,6 @@ class Elementalist(Class):
     # Fire : launches a fireball in an area that deals damage to ennemies and leaves flames that deal damage each round for 3 rounds
     # Earth : Gives a shield to all allies around for 1 round
     # Air : Increases mobility of all allies around him for 1 round
-    if self.current_element == Element.NO_ELEMENT:
-      self.skill_2 = "Non disponible"
-    elif self.current_element == Element.AIR:
-      self.skill_2 = "Mistral"
-    elif self.current_element == Element.EARTH:
-      self.skill_2 = "Glissement de terrain"
-    elif self.current_element == Element.FIRE:
-      self.skill_2 = "Eruption volcanique"
-    elif self.current_element == Element.WATER:
-      self.skill_2 = "Sources chaudes"
     super().skill_2()
   
   def start_turn(self) -> None:

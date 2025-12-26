@@ -13,9 +13,9 @@ class Cyborg(Class):
   cooldown_skill_2 = 3
   max_overcharge: int = 5
   current_overcharge: int = 0
-  passive = "Surchauffe"
-  skill_1 = "Assassin silencieux"
-  skill_2 = "Réinitialisation"
+  passive_name = "Surchauffe"
+  skill_1_name = "Assassin silencieux"
+  skill_2_name = "Réinitialisation"
 
   def __init__(self, faction) -> None:
     Cyborg.id += 1

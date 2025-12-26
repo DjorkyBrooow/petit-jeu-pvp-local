@@ -11,9 +11,9 @@ class Alchemist(Class):
   priority = 10
   cooldown_skill_1 = 1
   cooldown_skill_2 = 4
-  passive = "Potions incertaines"
-  skill_1 = "Eau de vie"
-  skill_2 = "Feu sacré"
+  passive_name = "Potions incertaines"
+  skill_1_name = "Eau de vie"
+  skill_2_name = "Feu sacré"
 
   def __init__(self, faction) -> None:
     Alchemist.id += 1
@@ -42,6 +42,7 @@ class Alchemist(Class):
     super().start_turn()
 
   def auto_attack(self, target: Class) -> None:
+    super().auto_attack(target)
     pass
   
   def move(self, x, y) -> None:

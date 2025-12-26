@@ -10,9 +10,9 @@ class Poisoner(Class):
   priority = 7
   cooldown_skill_1 = 1
   cooldown_skill_2 = 3
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  passive_name = ""
+  skill_1_name = ""
+  skill_2_name = ""
 
   def __init__(self, faction) -> None:
     Poisoner.id += 1

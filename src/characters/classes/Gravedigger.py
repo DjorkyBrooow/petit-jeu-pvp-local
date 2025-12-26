@@ -10,9 +10,9 @@ class Gravedigger(Class):
   priority = 1
   cooldown_skill_1 = 2
   cooldown_skill_2 = 3
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  passive_name = "Réveil des morts"
+  skill_1_name = "Coup de pelle"
+  skill_2_name = "Vous ne passerez pas !"
 
   def __init__(self, faction) -> None:
     Gravedigger.id += 1
@@ -34,7 +34,7 @@ class Gravedigger(Class):
     super().skill_1()
   
   def skill_2(self) -> None:
-    # Targets an area and all characters in this area are immobilized for 1 round
+    # Targets an area and all characters in this area are immobilized
     # Suffering enough damage sets them free
     super().skill_2()
   

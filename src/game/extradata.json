@@ -1,15 +1,21 @@
 {
-    "directionalControls": {
-      "north": "z",
-      "west": "q",
-      "south": "s",
-      "east": "d"
-    },
-
-    "startGameText": [
+  "directionalControls": {
+    "north": "z",
+    "west": "q",
+    "south": "s",
+    "east": "d"
+  },
+  "skills": {
+    "skill_1_key": "&",
+    "skill_2_key": "é",
+    "auto_attack_key": "a",
+    "auto_attack_value": "Attaque de base"
+  },
+  "startGameText": [
     "Vous avez lancé une partie de JdR PvP. Deux équipes vont s'affronter,",
-    "la première à terrasser l'autre gagne la partie."],
-    "titleText":[
+    "la première à terrasser l'autre gagne la partie."
+  ],
+  "titleText": [
     "┌───────┐           ┌───────┐",
     "│ ┌───┐ │           │ ┌───┐ │",
     "│ │   │ │           │ │   │ │",
@@ -17,13 +23,20 @@
     "│ ┌─────┘  \\\\   //  │ ┌─────┘",
     "│ │         \\\\_//   │ │      ",
     "│ │          \\_/    │ │      ",
-    "└─┘                 └─┘      "],
+    "└─┘                 └─┘      "
+  ],
   "mainMenuText": "Appuyez sur une touche pour commencer.",
   "mainMenuText2": "Appuyez sur c pour modifier les paramètres.",
   "mainMenuText3": "Appuyez sur x pour quitter la partie à tout moment.",
-  "quit": "x",
-  "custom": "c",
-
+  "quit_key": "x",
+  "quit_value": "Quitter la partie",
+  "custom_key": "c",
+  "pass_key": "p",
+  "pass_value": "Passer son tour",
+  "cancel_key": "c",
+  "cancel_value": "Annuler",
+  "enter_key": "Entrée",
+  "enter_value": "Valider",
 
   "optionsTitleText": "Customize Game:",
   "optionsText": [
@@ -61,21 +74,29 @@
     }
   ],
 
-
   "step1": "1. Choisissez les classes des personnages de l'Alliance",
   "step2": "2. Choisissez les classes des personnages de la Horde",
   "availableClasses": "Les classes disponibles sont les suivantes : ",
+  "choosenAlliance": "Les personnages de l'alliance choisis sont : ",
+  "choosenHorde": "Les personnages de la horde choisis sont : ",
 
-  "choosenAlliance" : "Les personnages de l'alliance choisis sont : ",
-  "choosenHorde" : "Les personnages de la horde choisis sont : ",
-  "validateChoice": "Validez-vous vos choix ? Oui (o) / Non (n)",
-  "yes": "o",
-  "no": "n",
+  "validateChoice": "Validez-vous vos choix ?",
+  "yes_key": "o",
+  "yes_value": "Oui",
+  "no_key": "n",
+  "no_value": "Non",
+  
+  "gameStart": "La partie commence",
+  "characterTurn": "C'est le tour de ",
+  "targetSelection": "Veuillez choisir une cible",
 
+  "currentCharacter": "Personnage actuel",
+  "targetCharacter": "Personnage ciblé",
+  "none": "Aucun",
+  "class": "Classe",
+  "sameFaction": "La cible appartient à la même faction",
 
-  "goodbyeText": "Au revoir", 
+  "goodbyeText": "Au revoir",
   "goodbyeText2": "Merci d'avoir joué !",
-  "goodbyeText3": "Pressez n'importe quelle touche pour quitter",
-
-  "gameStart": "La partie commence"
+  "goodbyeText3": "Pressez n'importe quelle touche pour quitter"
 }

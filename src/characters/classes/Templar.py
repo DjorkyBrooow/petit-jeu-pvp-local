@@ -10,9 +10,11 @@ class Templar(Class):
   priority = 9
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  current_holy_power = 0
+  MAX_HOLY_POWER = 5
+  passive_name = "Béni par les dieux"
+  skill_1_name = "Bénédiction du templier"
+  skill_2_name = "Lumière aveuglante"
 
   def __init__(self, faction) -> None:
     Templar.id += 1

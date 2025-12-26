@@ -10,9 +10,9 @@ class Oracle(Class):
   priority = 5
   cooldown_skill_1 = 3
   cooldown_skill_2 = 3
-  passive = ""
-  skill_1 = ""
-  skill_2 = ""
+  passive_name = ""
+  skill_1_name = ""
+  skill_2_name = ""
 
   def __init__(self, faction) -> None:
     Oracle.id += 1

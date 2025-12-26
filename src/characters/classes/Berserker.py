@@ -10,9 +10,9 @@ class Berserker(Class):
   priority = 17
   cooldown_skill_1 = 5
   cooldown_skill_2 = 2
-  passive = "Ce qui ne me tue pas me rend plus fort"
-  skill_1 = "Rage du berserker"
-  skill_2 = "Lancer de hache"
+  passive_name = "Ce qui ne me tue pas me rend plus fort"
+  skill_1_name = "Rage du berserker"
+  skill_2_name = "Lancer de hache"
 
   def __init__(self, faction) -> None:
     Berserker.id += 1

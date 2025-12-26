@@ -67,15 +67,17 @@ def launch_game(stdscr):
     data = Game.load_data()
     key = display_main_menu(data)
 
-    if key == data["quit"]:
+    if key == data["quit_key"]:
         Game.exit_game(stdscr, data)
         return
-    elif key == data["custom"]:
+    elif key == data["custom_key"]:
         pass
     else:
         game = Game(stdscr)
         game.data = data
-        game.start_game()
+        res = game.start_game()
+        if not res:
+            Game.exit_game(stdscr, data)
         return
     
 
