@@ -1,6 +1,7 @@
 from characters.Class import Class
 from game.static.Constants import *
 from random import randint
+from game import Game
 
 class Alchemist(Class):
   
@@ -26,11 +27,18 @@ class Alchemist(Class):
       value = value * 2
     return value
 
-  def skill_1(self) -> None:
+  def skill_1(self, game: Game) -> None:
     # Launches a potion on a target 
     # Can either be a buff on an ally (attack buff)
     # Or a debuff on an ennemy (attack debuff) (cannot be below 1)
-    super().skill_1()
+    selected_square = game.select_target_square(self, 0, 0)
+    target: Class = game.get_character_from_square(selected_square)
+    if target is not None:
+      if target.faction == self.faction:
+        target.buff_damage(self.passive(1), 2, f"{self.skill_1_name} {self.content}", target)
+      else:
+        target.buff_damage(self.passive(-1), 2, f"{self.skill_1_name} {self.content}", target)
+      super().skill_1(game)
   
   def skill_2(self) -> None:
     # Launches a potion on the ground that targets an area
@@ -45,11 +53,8 @@ class Alchemist(Class):
     super().auto_attack(target)
     pass
   
-  def move(self, x, y) -> None:
-    super().move(x, y)
-    pass
-  
   def end_of_turn(self) -> None:
+    super().end_of_turn()
     pass
   
   def suffer_damage(self, source: Class, damage: int) -> None:

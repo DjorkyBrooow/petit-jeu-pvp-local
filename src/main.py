@@ -83,13 +83,6 @@ def launch_game(stdscr):
 
 
 def main(stdscr):
-
-    # key = stdscr.getkey()
-    # while key != 'q':
-    #     stdscr.clear()
-    #     stdscr.addstr(0, 0, key)
-    #     stdscr.refresh()
-    #     key = stdscr.getkey()
     
     # COLORS
     curses.start_color()

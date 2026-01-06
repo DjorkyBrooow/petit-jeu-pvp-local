@@ -70,10 +70,6 @@ class Elementalist(Class):
     super().auto_attack(target)
     pass
   
-  def move(self, x, y) -> None:
-    super().move(x, y)
-    pass
-  
   def end_of_turn(self) -> None:
     super().end_of_turn()
     pass

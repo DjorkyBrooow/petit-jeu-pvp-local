@@ -3,6 +3,7 @@ from typing import Tuple, Union
 from characters.Class import Class
 from characters.classes import *
 from game.Square import Square
+from game.static.Direction import Direction
 from game.static.Faction import Faction
 import os, curses, json
 
@@ -40,7 +41,7 @@ class Game:
     
     # WINDOWS
     map_window: curses.window
-    title_window: curses.window = curses.newwin(1, curses.COLS - 1, 1, 0)
+    title_window: curses.window = curses.newwin(3, curses.COLS - 1, 2, 0)
     options_window: curses.window = curses.newwin(9, int((curses.COLS - 1)/2), curses.LINES - 10, int((curses.COLS - 1)/5))
     character_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/4), 2, int(3*(curses.COLS - 1)/4))
     target_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/4), 4, int((curses.COLS - 1)/4))
@@ -73,10 +74,12 @@ class Game:
         while self.game_in_progress():
             for character in self.character_list:
                 if character.is_alive:
-                    character.current_mobility = character.mobility.value
                     res = self.play_turn(character, round_number)
                     if not res:
                         return False
+            for character in self.character_list:
+                if character.is_alive:
+                    character.end_of_turn()
             round_number += 1
         return True
     
@@ -256,8 +259,7 @@ class Game:
                     text: str
                 ) -> None :
         
-        self.title_window.clear()
-        self.title_window.addstr(0, int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+        self.title_window.addstr(1, int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
         self.title_window.refresh()
         
         self.map_window.clear()
@@ -273,8 +275,15 @@ class Game:
         
         while True:
             self.stdscr.clear()
-            self.stdscr.addstr(0, 0, f"Tour {round_number} - Déplacements restants : {character.current_mobility}")
             self.stdscr.refresh()
+            
+            text = f"{self.data['round']} {round_number}"
+            text2 = f"{self.data['remainingMovements']} : {character.current_mobility}"
+            
+            self.title_window.clear()
+            self.title_window.addstr(0, int(round((curses.COLS-1)/2) - round(len(text)/2)), text)
+            self.title_window.addstr(2, int(round((curses.COLS-1)/2) - round(len(text2)/2)), text2)
+            self.title_window.refresh()
             
             self.map_window.clear()
             characterTurnText = self.data["characterTurn"] + character.content
@@ -300,36 +309,46 @@ class Game:
             self.display_current_character_details(character)
             
             action = self.stdscr.getkey()
+
             if character.current_mobility > 0:
                 if action == self.data["directionalControls"]["north"]:
-                    if character.y_coord > 0 and self.square_is_empty_direction(character, "north"):
+                    direc = Direction.NORTH
+                    if character.y_coord > 0 and self.square_is_empty_direction(character, direc):
                         self.map.reset_square_content(character.x_coord, character.y_coord)
-                        character.move(0 , -1)
+                        character.move_with_direction(direc)
                 elif action == self.data["directionalControls"]["west"]:
-                    if character.x_coord > 0 and self.square_is_empty_direction(character, "west"):
+                    direc = Direction.WEST
+                    if character.x_coord > 0 and self.square_is_empty_direction(character, direc):
                         self.map.reset_square_content(character.x_coord, character.y_coord)
-                        character.move(-1 , 0)
+                        character.move_with_direction(direc)
                 elif action == self.data["directionalControls"]["south"]:
-                    if character.y_coord < self.map.height - 1 and self.square_is_empty_direction(character, "south"):
+                    direc = Direction.SOUTH
+                    if character.y_coord < self.map.height - 1 and self.square_is_empty_direction(character, direc):
                         self.map.reset_square_content(character.x_coord, character.y_coord)
-                        character.move(0 , 1)
+                        character.move_with_direction(direc)
                 elif action == self.data["directionalControls"]["east"]:
-                    if character.x_coord < self.map.width - 1 and self.square_is_empty_direction(character, "east"):
+                    direc = Direction.EAST
+                    if character.x_coord < self.map.width - 1 and self.square_is_empty_direction(character, direc):
                         self.map.reset_square_content(character.x_coord, character.y_coord)
-                        character.move(1 , 0)
+                        character.move_with_direction(direc)
             if action == self.data["skills"]["skill_1_key"]:
+                if not character.used_skill:
+                    character.skill_1(self)
                 pass
             elif action == self.data["skills"]["skill_2_key"]:
+                if not character.used_skill:
+                    character.skill_2(self)
                 pass
             elif action == self.data["skills"]["auto_attack_key"]:
-                selected_square = self.select_ennemy_or_ally_target_square(character, False)
-                if selected_square == -1:
-                    pass
-                elif selected_square is None:
-                    return False
-                else:
-                    target = self.get_character_from_square(selected_square)
-                    character.auto_attack(target)
+                if not character.used_auto_attack:
+                    selected_square = self.select_ennemy_or_ally_target_square(character, False)
+                    if selected_square == -1:
+                        pass
+                    elif selected_square is None:
+                        return False
+                    else:
+                        target = self.get_character_from_square(selected_square)
+                        character.auto_attack(target)
             elif action == self.data["pass_key"]:
                 self.options_window.clear()
                 break
@@ -383,20 +402,30 @@ class Game:
                             3,
                             curses.A_NORMAL)
             self.map_window.refresh()
+            x = selected_square[0]
+            y = selected_square[1]
             if action == self.data["directionalControls"]["north"]:
-                if selected_square[1] > 0:
-                    selected_square = (selected_square[0], selected_square[1] - 1)
+                if y > 0:
+                    y = y - 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
             elif action == self.data["directionalControls"]["west"]:
-                if selected_square[0] > 0:
-                    selected_square = (selected_square[0] - 1, selected_square[1])
+                if x > 0:
+                    x = x - 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
             elif action == self.data["directionalControls"]["south"]:
-                if selected_square[1] < self.map.height - 1:
-                    selected_square = (selected_square[0], selected_square[1] + 1)
+                if y < self.map.height - 1:
+                    y = y + 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
             elif action == self.data["directionalControls"]["east"]:
-                if selected_square[0] < self.map.width - 1:
-                    selected_square = (selected_square[0] + 1, selected_square[1])
+                if x < self.map.width - 1:
+                    x = x + 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
             elif action == "\n":
-                if self.square_is_empty(selected_square[0], selected_square[1]):
+                if self.square_is_empty(x, y):
                     pass
                 else:
                     self.options_window.clear()
@@ -442,14 +471,14 @@ class Game:
     def who_is_at_range_ally(self, player: Class) -> list[str]:
         ret = []
         for elem in Game.character_list:
-            if elem.faction == player.faction and player.is_at_range(elem):
+            if elem.faction == player.faction and player.is_at_range_character(elem):
                 ret += elem.content
         return ret
     
     def who_is_at_range_enemy(self, player: Class) -> list[str]:
         ret = []
         for elem in Game.character_list:
-            if elem.faction != player.faction and player.is_at_range(elem):
+            if elem.faction != player.faction and player.is_at_range_character(elem):
                 ret += elem.content
         return ret
     
@@ -458,21 +487,11 @@ class Game:
         for elem in self.character_list:
             self.map.square_list[(elem.x_coord, elem.y_coord)].content = elem.content
             
-    def square_is_empty_direction(self, current_char: Class, direction: str) -> bool:
+    def square_is_empty_direction(self, current_char: Class, direction: Direction) -> bool:
         for char in self.character_list:
             if char != current_char:
-                if direction == "north":
-                    if current_char.y_coord - 1 == char.y_coord and current_char.x_coord == char.x_coord:
-                        return False
-                elif direction == "west":
-                    if current_char.y_coord == char.y_coord and current_char.x_coord - 1 == char.x_coord:
-                        return False
-                elif direction == "south":
-                    if current_char.y_coord + 1 == char.y_coord and current_char.x_coord == char.x_coord:
-                        return False
-                elif direction == "east":
-                    if current_char.y_coord == char.y_coord and current_char.x_coord + 1 == char.x_coord:
-                        return False
+                if current_char.y_coord + direction.value[1] == char.y_coord and current_char.x_coord + direction.value[0] == char.x_coord:
+                    return False
         return True
             
     def square_is_empty(self, x: int, y: int) -> bool:
@@ -504,13 +523,17 @@ class Game:
         self.character_window.clear()
         self.character_window.addstr(0, 0, f"{self.data['currentCharacter']} : {character.content} : {character.current_hp} / {character.max_hp.value}")
         self.character_window.addstr(1, 0, f"{self.data['class']} : {character.__class__.__name__}")
+        self.character_window.addstr(2, 0, f"{self.data['direction']} : {character.direction.name}")
+        self.character_window.addstr(3, 0, f"{self.data['damage']} : {character.current_damage}")
         self.character_window.refresh()
     
     def display_target_character_details(self, character: Class, additional_text: str = "") -> None: 
         self.target_window.clear()
-        self.target_window.addstr(0, 0, f"{self.data['targetCharacter']} : {character.content} : {character.current_hp} / {character.max_hp.value}")
+        self.target_window.addstr(0, 0, f"{self.data['targetCharacter']} : {character.content} {character.current_hp} / {character.max_hp.value}")
         self.target_window.addstr(1, 0, f"{self.data['class']} : {character.__class__.__name__}")
-        self.target_window.addstr(2, 0, additional_text)
+        self.target_window.addstr(2, 0, f"{self.data['direction']} : {character.direction.name}")
+        self.target_window.addstr(3, 0, f"{self.data['damage']} : {character.current_damage}")
+        self.target_window.addstr(4, 0, additional_text)
         self.target_window.refresh()
     
     @staticmethod
@@ -566,12 +589,31 @@ class Map():
         ret = ""
         for j in range(self.height + 1):
             for i in range(self.width):
-                ret += "+---"
-            ret += "+\n"
+                if i == 0:
+                    if j == 0:
+                        ret += "┌───"
+                    elif j == self.height:
+                        ret += "└───"
+                    else: 
+                        ret += "├───"
+                if i == self.width - 1:
+                    if j == 0:
+                        ret += "┐\n"
+                    elif j == self.height:
+                        ret += "┘\n"
+                    else: 
+                        ret += "┤\n"
+                else:
+                    if j == 0:
+                        ret += "┬───"
+                    elif j == self.height:
+                        ret += "┴───"
+                    else:
+                        ret += "┼───"
             if j != self.height:
                 for i in range(self.width):
                     current_square = self.square_list[(i,j)]
-                    ret += f"|{str(current_square)}"
-                ret += "|\n"
+                    ret += f"│{str(current_square)}"
+                ret += "│\n"
         return ret
         

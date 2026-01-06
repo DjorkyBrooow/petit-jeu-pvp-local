@@ -42,10 +42,6 @@ class Warrior(Class):
     super().auto_attack(target)
     pass
   
-  def move(self, x, y) -> None:
-    super().move(x, y)
-    pass
-  
   def start_turn(self) -> None:
     super().start_turn()
     pass

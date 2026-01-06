@@ -1,6 +1,8 @@
+from game import Game
+from game.Square import Square
 from game.static.State import State
 from game.static.Direction import Direction
-from game.Counter import Counter, ShieldCounter, PoisonCounter, StateCounter
+from game.Counter import *
 from game.static.Faction import Faction
 from abc import ABC, abstractmethod
 from math import sqrt
@@ -12,17 +14,18 @@ class Class(ABC):
     current_hp: int
     current_mobility: int
     current_damage: int
+    current_range: int
     state: State
     is_alive: bool
     critical_rate: float = 0.1
     critical_hit: float = 1.4
-    direction: Direction
 
     # Unique stats
     max_hp : Health
     mobility: Mobility
     damage: Damage
     range: Range
+    direction: Direction
     priority: int
     name: str
     passive_name: str
@@ -42,7 +45,13 @@ class Class(ABC):
     poison_counters: dict[str: PoisonCounter] = {}
     state_counters: dict[str: StateCounter] = {}
     skill_counters: dict[str: Counter] = {}
-    counters: list[dict[str: Counter]] = [shield_counters, poison_counters, state_counters, skill_counters]
+    buff_counters: dict[str: Counter] = {}
+    counters: list[dict[str: Counter]] = [shield_counters, poison_counters, state_counters, skill_counters, buff_counters]
+    
+    # Used skills
+    
+    used_auto_attack: bool = False
+    used_skill: bool = False
 
     # Static variables
 
@@ -70,31 +79,20 @@ class Class(ABC):
         self.current_hp = self.max_hp.value
         self.current_mobility = self.mobility.value
         self.current_damage = self.damage.value
+        self.current_range = self.range.value
         self.state = State.NORMAL
         self.is_alive = True
         self.faction = faction
         self.name = type(self).__name__ + " " + self.faction.name + " " + str(self.id)
         self.content = self.name[0] + str(self.id) + self.faction.name[0]
+        self.direction = Direction.EAST if faction == Faction.ALLIANCE else Direction.WEST
     
 
     def play_turn(self) -> None:
-        if self.is_alive:
-            self.start_turn()
-            self.end_of_turn()
-        else:
-            pass
+        pass
 
     @abstractmethod
     def start_turn(self) -> None:
-        if self.state == State.SILENCE:
-            self.move(self.x_coord, self.y_coord)
-            self.auto_attack()
-        elif self.state == State.IMMOBILIZED:
-            pass
-        elif self.state == State.STUNNED:
-            pass
-        elif self.state == State.NORMAL:
-            pass
         pass
 
     @abstractmethod
@@ -103,8 +101,25 @@ class Class(ABC):
             self.suffer_damage(self, poison.value)
 
         for elem in self.counters:
-            for id in elem.keys():
-                elem[id].decrement()
+            if len(elem)>0:
+                keys_to_remove = []
+                for key in elem:
+                    counter = elem[key]
+                    counter.decrement()
+                    if counter.count == 0:
+                        keys_to_remove.append(key) 
+                    
+                for key in keys_to_remove:
+                    del elem[key]
+
+
+        self.used_auto_attack = False
+        self.used_skill = False
+        
+        self.current_mobility = self.mobility.value
+        self.current_damage = self.damage.value
+        self.current_range = self.range.value
+        self.state = State.NORMAL
 
 
     @abstractmethod 
@@ -114,6 +129,7 @@ class Class(ABC):
         if rng <= self.critical_rate * 100:
             damage *= self.critical_hit
         target.suffer_damage('Auto-attack', damage)
+        self.used_auto_attack = True
     
     @abstractmethod
     def suffer_damage(self, source: str, damage: int) -> None:
@@ -152,35 +168,80 @@ class Class(ABC):
         pass
 
     @abstractmethod
-    def skill_1(self) -> None:
+    def skill_1(self, game: Game) -> None:
+        self.used_skill = True
         pass
 
     @abstractmethod
-    def skill_2(self) -> None:
+    def skill_2(self, game: Game) -> None:
+        self.used_skill = True
         pass
 
-    @abstractmethod
-    def move(self, x: int, y: int) -> None:
+    def move_with_coords(self, x: int, y: int) -> None:
         self.x_coord += x
         self.y_coord += y
         self.current_mobility -= 1
-        
+    
+    def move_with_direction(self, direction: Direction) -> None:
+        if self.current_mobility > 0:
+            self.x_coord += direction.value[0]
+            self.y_coord += direction.value[1]
+            self.current_mobility -= 1
+        self.direction = direction
+    
+    def move_with_str(self, direction: str) -> None:
+        if direction == "north":
+            self.move_with_direction(Direction.NORTH)
+        elif direction == "west":
+            self.move_with_direction(Direction.WEST)
+        elif direction == "south":
+            self.move_with_direction(Direction.SOUTH)
+        elif direction == "east":
+            self.move_with_direction(Direction.EAST)
             
     
-    def is_at_range(self, target: 'Class') -> bool:
+    def is_at_range_character(self, target: 'Class') -> bool:
         res = False
         x_diff= self.x_coord - target.x_coord
         y_diff= self.y_coord - target.y_coord
         distance = sqrt( x_diff**2 + y_diff**2 )
-        if distance <= self.range:
+        if distance <= self.current_range:
+            res = True
+        return res
+    
+    def is_at_range_coords(self, x: int, y: int) -> bool:
+        res = False
+        x_diff= self.x_coord - x
+        y_diff= self.y_coord - y
+        distance = sqrt( x_diff**2 + y_diff**2 )
+        if distance <= self.current_range:
             res = True
         return res
 
+    def is_at_range_square(self, square: Square) -> bool:
+        res = False
+        x_diff= self.x_coord - square.x_coord
+        y_diff= self.y_coord - square
+        distance = sqrt( x_diff**2 + y_diff**2 )
+        if distance <= self.current_range:
+            res = True
+        return res
+    
     def is_ally(self, target: 'Class') -> bool:
         res = False
         if target.team == self.team:
             res = True
         return res
+    
+    def buff_damage(self, damage_buff: int, duration: int, skill_name: str, target: 'Class') -> bool:
+        counter = BuffDamageCounter(damage_buff, skill_name, duration)
+        target.buff_counters[skill_name] = counter
+        for key in target.buff_counters:
+            target.current_damage = target.damage.value + target.buff_counters[key].value
+        if target.current_damage < Damage.VERY_LOW_DAMAGE.value:
+            target.current_damage = Damage.VERY_LOW_DAMAGE.value
+        return True
+        
     
     #########################
     #                       #

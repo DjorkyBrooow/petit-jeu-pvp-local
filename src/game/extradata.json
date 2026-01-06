@@ -89,11 +89,15 @@
   "gameStart": "La partie commence",
   "characterTurn": "C'est le tour de ",
   "targetSelection": "Veuillez choisir une cible",
+  "round": "Tour",
+  "remainingMovements": "Déplacements restants",
 
   "currentCharacter": "Personnage actuel",
-  "targetCharacter": "Personnage ciblé",
+  "targetCharacter": "Cible",
   "none": "Aucun",
   "class": "Classe",
+  "direction": "Direction",
+  "damage": "Attaque",
   "sameFaction": "La cible appartient à la même faction",
 
   "goodbyeText": "Au revoir",

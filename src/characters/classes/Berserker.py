@@ -36,14 +36,10 @@ class Berserker(Class):
     super().skill_2()
   
   def start_turn(self) -> None:
-    return super().start_turn()
+    super().start_turn()
 
   def auto_attack(self, target: Class) -> None:
     super().auto_attack(target)
-    pass
-  
-  def move(self, x, y) -> None:
-    super().move(x, y)
     pass
   
   def end_of_turn(self) -> None:
