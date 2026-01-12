@@ -89,10 +89,11 @@
   "gameStart": "La partie commence",
   "characterTurn": "C'est le tour de ",
   "targetSelection": "Veuillez choisir une cible",
+  "areaSelection": "Veuillez choisir une zone cible",
   "round": "Tour",
   "remainingMovements": "Déplacements restants",
 
-  "currentCharacter": "Personnage actuel",
+  "currentCharacter": "Tour de",
   "targetCharacter": "Cible",
   "none": "Aucun",
   "class": "Classe",

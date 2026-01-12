@@ -22,6 +22,7 @@ class Mobility(Enum):
     VERY_HIGH_MOBILITY: int = 6
     
 class Range(Enum):
+    BLIND: int = 0
     CLOSE_RANGE: int = 1
     MID_CLOSE_RANGE: int = 3
     MID_LONG_RANGE: int = 5

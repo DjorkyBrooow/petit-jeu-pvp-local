@@ -29,10 +29,13 @@ class Class(ABC):
     priority: int
     name: str
     passive_name: str
+    passive_description: str
     cooldown_passive: int
     skill_1_name: str
+    skill_1_description: str
     cooldown_skill_1: int
     skill_2_name: str
+    skill_2_description: str
     cooldown_skill_2: int
     x_coord: int
     y_coord: int
@@ -128,7 +131,7 @@ class Class(ABC):
         rng = random.randrange(100)
         if rng <= self.critical_rate * 100:
             damage *= self.critical_hit
-        target.suffer_damage('Auto-attack', damage)
+        target.suffer_damage('Attaque auto', damage)
         self.used_auto_attack = True
     
     @abstractmethod
@@ -140,7 +143,7 @@ class Class(ABC):
                     shield_list = sorted(self.shield_counters.items(), key=lambda x: (x[1].count, x[1].value))
                     for source_id, shield_counter in shield_list:
                         if shield_counter.value <= diff_shield:
-                            del self.shield_counters[source_id]
+                            self.remove_shield(source_id)
                             diff_shield -= shield_counter.value
                         else:
                             self.shield_counters[source_id].value -= diff_shield
@@ -156,9 +159,15 @@ class Class(ABC):
                 self.current_hp = self.current_hp - damage
                 print(f"{self.name} a subi {damage} points de '{source}' dans sa barre de PV")
             if self.current_hp <= 0:
+                self.current_hp = 0
                 self.is_alive = False
         else:
             print("Votre cible n'existe plus")
+    
+    def heal(self, source: str, value: int) -> None:
+        add = self.current_hp + value
+        if add <= self.max_hp.value:
+            self.current_hp += value
 
     def __str__(self) -> str:
         return f"{self.content} : {self.current_hp}{f' ({str(self.get_total_shield())})' if self.get_total_shield() > 0 else ''} / {self.max_hp.value}"
@@ -249,12 +258,8 @@ class Class(ABC):
     #                       #
     #########################
 
-    def add_shield(self, shield_counter: ShieldCounter) -> None:
-        if shield_counter.skill_source in self.shield_counters:
-            print(f"Current shield {shield_counter.skill_source} reset")
-        else:
-            print(f"Successfully added shield for {shield_counter.count} rounds to block {shield_counter.value} damage")
-        self.shield_counters[shield_counter.skill_source] = shield_counter
+    def add_shield(self, source: str, value: int, duration: int) -> None:
+        self.shield_counters[source] = ShieldCounter(value, source, duration)
 
     def remove_shield(self, source_id: str) -> None:
         if source_id in self.shield_counters:
@@ -267,17 +272,19 @@ class Class(ABC):
             sum += value.value
         return sum
 
-    def add_poison(self, poison_counter: PoisonCounter) -> None:
-        if poison_counter.skill_source in self.poison_counters:
-            print(f"Current poison {poison_counter.skill_source} reset")
-        else:
-            print(f"Successfully added poison for {poison_counter.count} rounds to deal {poison_counter.value} damage per round")
-        self.poison_counters[poison_counter.skill_source] = poison_counter
+    def add_poison(self, source: str, value: int, duration: int) -> None:
+        self.shield_counters[source] = PoisonCounter(value, source, duration)
 
     def remove_poison(self, source_id: str) -> None:
         if source_id in self.poison_counters:
             del self.poison_counters[source_id]
             print(f"The poison of {source_id} has expired or has been cleansed")
+    
+    def get_total_poison(self) -> int:
+        sum = 0
+        for value in self.poison_counters.values():
+            sum += value.value
+        return sum
     
     #########################
     #                       #
@@ -288,6 +295,3 @@ class Class(ABC):
     def set_coords(self, x: int, y: int) -> None:
         self.x_coord = x
         self.y_coord = y
-    
-    def get_total_poison(self) -> int:
-        return sum(self.poison_counters.values())

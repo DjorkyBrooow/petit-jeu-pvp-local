@@ -1,15 +1,20 @@
 from enum import Enum
+from game.static.Constants import Damage
 
 class SquareType(Enum):
-    EMPTY = "\033[0m"
-    FIRE = "\033[41m"
-    LAVA = "\033[48;5;130m"
-    ICE = "\033[48;5;45m"
-    POISON = "\033[48;5;46m"
-    WATER = "\033[48;5;21m"
-    LIGHT = "\033[48;5;226m"
-    SHADOW = "\033[48;5;55m"
-    ARCANE = "\033[48;5;135m"
+    EMPTY = 0
+    FIRE = 1
+    LAVA = 2
+    ICE = 3
+    POISON = 4
+    WATER = 5
+    LIGHT = 6
+    SHADOW = 7
+    ARCANE = 8
+    HOLY_FIRE = 9
+    
+    def __str__(self) -> str:
+        return self.name
 
 
 

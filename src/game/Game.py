@@ -3,9 +3,12 @@ from typing import Tuple, Union
 from characters.Class import Class
 from characters.classes import *
 from game.Square import Square
+from game.static.Constants import Range
 from game.static.Direction import Direction
 from game.static.Faction import Faction
 import os, curses, json
+
+from game.static.SquareType import SquareType
 
 class Game:
     
@@ -32,19 +35,23 @@ class Game:
     curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(5, curses.COLOR_BLACK, curses.COLOR_BLUE)
     curses.init_pair(6, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_RED)
+    curses.init_pair(8, curses.COLOR_RED, curses.COLOR_WHITE)
     WHITE_ON_BLACK = curses.color_pair(1)
     BLACK_ON_WHITE = curses.color_pair(2)
     BLACK_ON_RED = curses.color_pair(3)
     RED_ON_BLACK = curses.color_pair(4)
     BLACK_ON_BLUE = curses.color_pair(5)
     BLUE_ON_BLACK = curses.color_pair(6)
+    WHITE_ON_RED = curses.color_pair(7)
+    RED_ON_WHITE = curses.color_pair(8)
     
     # WINDOWS
     map_window: curses.window
     title_window: curses.window = curses.newwin(3, curses.COLS - 1, 2, 0)
-    options_window: curses.window = curses.newwin(9, int((curses.COLS - 1)/2), curses.LINES - 10, int((curses.COLS - 1)/5))
-    character_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/4), 2, int(3*(curses.COLS - 1)/4))
-    target_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/4), 4, int((curses.COLS - 1)/4))
+    options_window: curses.window = curses.newwin(9, int((curses.COLS - 1)/2), curses.LINES - 10, 10)
+    target_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/8), 2, int(7*(curses.COLS - 1)/8))
+    character_window: curses.window = curses.newwin(5, int((curses.COLS - 1)/8), 2, int((curses.COLS - 1)/8))
     
     def __init__(self, stdscr: curses.window) -> None:
         self.data = Game.load_data()
@@ -54,7 +61,7 @@ class Game:
         self.stdscr = stdscr
         
         mapWidth = 4*self.map.width+1
-        mapHeight = 4*self.map.height+1
+        mapHeight = 2*self.map.height+2
         x = int(round((curses.COLS-1)/2) - round(mapWidth/2))
         y = int(round((curses.LINES-1)/2) - round(mapHeight/2))
         self.map_window = curses.newwin(mapHeight, mapWidth, y, x)
@@ -70,7 +77,9 @@ class Game:
         
         self.display_map(gameStartText)
         round_number = 1
+        self.map_window.border()
         self.map_window.refresh()
+        self.map_window.getch()
         while self.game_in_progress():
             for character in self.character_list:
                 if character.is_alive:
@@ -263,9 +272,7 @@ class Game:
         self.title_window.refresh()
         
         self.map_window.clear()
-        listmap = self.map.str_to_list()
-        for index in range (len(listmap)):
-            self.map_window.addstr(index, 0, listmap[index])
+        self.map_window.addstr(0, 0, str(self.map))
         self.map_window.refresh()
         
     def play_turn(self,
@@ -333,12 +340,14 @@ class Game:
                         character.move_with_direction(direc)
             if action == self.data["skills"]["skill_1_key"]:
                 if not character.used_skill:
-                    character.skill_1(self)
-                pass
+                    res = character.skill_1(self)
+                    if res == False:
+                        return res
             elif action == self.data["skills"]["skill_2_key"]:
                 if not character.used_skill:
-                    character.skill_2(self)
-                pass
+                    res = character.skill_2(self)
+                    if res == False:
+                        return res
             elif action == self.data["skills"]["auto_attack_key"]:
                 if not character.used_auto_attack:
                     selected_square = self.select_ennemy_or_ally_target_square(character, False)
@@ -425,9 +434,7 @@ class Game:
                     if character.is_at_range_coords(x, y):
                         selected_square = (x, y)
             elif action == "\n":
-                if self.square_is_empty(x, y):
-                    pass
-                else:
+                if not self.square_is_empty(x, y):
                     self.options_window.clear()
                     self.target_window.clear()
                     return self.map.square_list[selected_square]
@@ -437,6 +444,101 @@ class Game:
                 return -1
             elif action == self.data["quit_key"]:
                 return None
+    
+    def target_area_range(self,
+                          character: Class, 
+                          range_area: Range,
+                          x_start: int = 0,
+                          y_start: int = 0
+                        ) -> Square:
+        self.map_window.clear()
+        self.target_window.clear()
+        self.update_map()
+        self.display_map(self.data["areaSelection"])
+        if x_start == 1 and y_start == 1 and character is not None:
+            x_start, y_start = character.x_coord, character.y_coord
+        selected_square = (x_start, y_start)
+        
+        self.display_options({
+            self.data["directionalControls"]["north"] : "↑",
+            self.data["directionalControls"]["south"] : "↓",
+            self.data["directionalControls"]["east"] : "→",
+            self.data["directionalControls"]["west"] : "←",
+            self.data["enter_key"] : self.data["enter_value"],
+            self.data["cancel_key"] : self.data["cancel_value"],
+            self.data["quit_key"] : self.data["quit_value"],
+        })
+        
+        if x_start == 0 and y_start == 0 and character is not None:
+            x_start, y_start = character.x_coord, character.y_coord
+        if x_start == 0:
+            x_start += range_area.value
+        if y_start == 0:
+            y_start += range_area.value
+        if x_start == self.map.width - 1:
+            x_start -= range_area.value
+        if y_start == self.map.height - 1:
+            y_start -= range_area.value
+        
+        selected_square = (x_start, y_start)
+        
+        while True:
+            self.target_window.clear()
+                
+            for j in range (selected_square[1] - range_area.value, selected_square[1] + range_area.value +1 , 1):
+                for i in range (selected_square[0] - range_area.value, selected_square[0] + range_area.value + 1, 1):
+                    self.map_window.chgat(j*2 + 1,
+                                    i*4 + 1,
+                                    3,
+                                    curses.A_REVERSE)
+            self.map_window.refresh()
+            action = self.map_window.getkey()
+                
+            for j in range (selected_square[1] - range_area.value, selected_square[1] + range_area.value + 1, 1):
+                for i in range (selected_square[0] - range_area.value, selected_square[0] + range_area.value + 1, 1):
+                    self.map_window.chgat(j*2 + 1,
+                                    i*4 + 1,
+                                    3,
+                                    curses.A_NORMAL)
+            self.map_window.refresh()
+            
+            x = selected_square[0]
+            y = selected_square[1]
+            if action == self.data["directionalControls"]["north"]:
+                if y > 0 + range_area.value:
+                    y = y - 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
+            elif action == self.data["directionalControls"]["west"]:
+                if x > 0 + range_area.value:
+                    x = x - 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
+            elif action == self.data["directionalControls"]["south"]:
+                if y < self.map.height - 1 - range_area.value:
+                    y = y + 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
+            elif action == self.data["directionalControls"]["east"]:
+                if x < self.map.width - 1 - range_area.value:
+                    x = x + 1
+                    if character.is_at_range_coords(x, y):
+                        selected_square = (x, y)
+            elif action == "\n":
+                selected_squares = []
+                for j in range (selected_square[1] - range_area.value, selected_square[1] + range_area.value + 1, 1):
+                    for i in range (selected_square[0] - range_area.value, selected_square[0] + range_area.value + 1, 1):
+                        selected_squares.append((self.map.get_square_from_coords(i, j)))
+                self.options_window.clear()
+                self.target_window.clear()
+                return selected_squares
+            elif action == self.data["cancel_key"]:
+                self.options_window.clear()
+                self.target_window.clear()
+                return -1
+            elif action == self.data["quit_key"]:
+                return None
+            
     
     def select_ennemy_or_ally_target_square(self,
                       character: Class,
@@ -521,7 +623,7 @@ class Game:
         
     def display_current_character_details(self, character: Class) -> None:
         self.character_window.clear()
-        self.character_window.addstr(0, 0, f"{self.data['currentCharacter']} : {character.content} : {character.current_hp} / {character.max_hp.value}")
+        self.character_window.addstr(0, 0, f"{self.data['currentCharacter']} : {character.content} {character.current_hp} ({character.get_total_shield()})/{character.max_hp.value}")
         self.character_window.addstr(1, 0, f"{self.data['class']} : {character.__class__.__name__}")
         self.character_window.addstr(2, 0, f"{self.data['direction']} : {character.direction.name}")
         self.character_window.addstr(3, 0, f"{self.data['damage']} : {character.current_damage}")
@@ -581,9 +683,12 @@ class Map():
             for j in range(self.height):
                 self.square_list[(i, j)].reset_content()
     
-    def str_to_list(self) -> list:
-        ret = str(self).split("\n")
-        return ret
+    def get_square_from_coords(self, x: int, y: int) -> Square:
+        return self.square_list[(x, y)]
+    
+    def set_square_type_with_coords(self, x: int, y: int, square_type: SquareType, duration: int) -> None:
+        square = self.get_square_from_coords(x, y)
+        square.set_square_type(square_type, duration)
 
     def __str__(self) -> str:
         ret = ""
@@ -598,11 +703,11 @@ class Map():
                         ret += "├───"
                 if i == self.width - 1:
                     if j == 0:
-                        ret += "┐\n"
+                        ret += "┐"
                     elif j == self.height:
-                        ret += "┘\n"
+                        ret += "┘"
                     else: 
-                        ret += "┤\n"
+                        ret += "┤"
                 else:
                     if j == 0:
                         ret += "┬───"
@@ -614,6 +719,6 @@ class Map():
                 for i in range(self.width):
                     current_square = self.square_list[(i,j)]
                     ret += f"│{str(current_square)}"
-                ret += "│\n"
+                ret += "│"
         return ret
         
