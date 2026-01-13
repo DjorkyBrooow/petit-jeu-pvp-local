@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 from enum import Enum
 
 
@@ -32,7 +33,7 @@ class Druid(Class):
     # Default form : human
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Changes into a bear, an eagle or a human
     # Skill 2 depends on the form
     # Changes stats 
@@ -44,13 +45,13 @@ class Druid(Class):
       self.skill_2_name = "Provocation"
     elif self.current_form == Form.EAGLE:
       self.skill_2_name = "Lâcher de rocher"
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Human : Heals a target
     # Bear : Taunts ennemies around him
     # Eagle : Throws a rock from the sky 
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

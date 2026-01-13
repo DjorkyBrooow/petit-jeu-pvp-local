@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Warrior(Class):
   
@@ -23,16 +24,16 @@ class Warrior(Class):
     # 30% chance to revert a negative effect to the launcher
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Shield bash dealing damage to ennemies in a direction 
     # Blocking damage from this direction for 2 rounds 
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # The warrior charges an ennemy
     # Immobilizes him
     # Mobility boost for 1 round
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

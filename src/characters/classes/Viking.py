@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Viking(Class):
   
@@ -23,15 +24,15 @@ class Viking(Class):
     # Gains hp for each ally at close range
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Fears all ennemies at close range
     # Increase damage dealt for 3 rounds
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Gains a shield that gives 30% chance to block attacks 
     # For 3 rounds
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

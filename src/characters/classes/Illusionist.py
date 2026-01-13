@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Illusionist(Class):
   
@@ -24,17 +25,17 @@ class Illusionist(Class):
     # If damages should kill him for the first time he survives at 1hp
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # For the next round all damages and effects taken 
     # Will be redirects to the launcher
     # Does not affect damage taken by the ground
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # The illusionist dashes in an area
     # Deals damage
     # Comes back at his original place at the start of the next round
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Templar(Class):
   
@@ -28,19 +29,19 @@ class Templar(Class):
     # To improve the next ability
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Makes himself immune and increases mobility for 1 round
     # Reinforces the next auto attack
     # Buffed : Gives the buff to all allies around him
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Creates a blinding light around him
     # That blinds all ennemies while they are in it 
     # Lasts for 3 rounds
     # Buffed : Also heals all allies 
     # And damages ennemies
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

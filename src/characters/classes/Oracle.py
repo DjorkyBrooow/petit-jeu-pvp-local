@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Oracle(Class):
   
@@ -34,16 +35,16 @@ class Oracle(Class):
     # Immobilizes an ennemy
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Choice
     # Sacrifies hp to heal all allies
     # Sacrifies hp to damage all ennemies
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Heals herself and silences an ally
     # Heals herself and immunizes an ennemy 
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

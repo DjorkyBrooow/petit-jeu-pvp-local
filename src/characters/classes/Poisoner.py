@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Poisoner(Class):
   
@@ -25,15 +26,15 @@ class Poisoner(Class):
     # Poisons the ennemy for 2 rounds
     super().passive()
     
-  def skill_1(self, target: Class) -> None:
+  def skill_1(self, game, target: Class) -> None:
     # Launchs a poison on an ennemy target
     # Lasts for 3 rounds 
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Increases his mobility and damage 
     # Lasts 2 rounds
-    super().skill_2()
+    super().skill_2(game)
   
   
   def start_turn(self) -> None:

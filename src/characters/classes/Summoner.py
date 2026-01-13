@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Summoner(Class):
   
@@ -24,17 +25,17 @@ class Summoner(Class):
     # Every summon lasts until they die or they are replaced by the other type
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Summons a tiger that deals big damage
     # Other active : Gives venom on the fangs
     # Auto attacks apply poison
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Summons a elephant that can tank big damage
     # Other active : gives a shield 
     # While shield is active, it irradiates and deals damage
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

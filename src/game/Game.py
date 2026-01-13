@@ -77,9 +77,9 @@ class Game:
         
         self.display_map(gameStartText)
         round_number = 1
-        self.map_window.border()
+        # self.map_window.border()
         self.map_window.refresh()
-        self.map_window.getch()
+        # self.map_window.getch()
         while self.game_in_progress():
             for character in self.character_list:
                 if character.is_alive:
@@ -350,7 +350,7 @@ class Game:
                         return res
             elif action == self.data["skills"]["auto_attack_key"]:
                 if not character.used_auto_attack:
-                    selected_square = self.select_ennemy_or_ally_target_square(character, False)
+                    selected_square = self.select_ennemy_or_ally_target_square(character, character.current_range, False)
                     if selected_square == -1:
                         pass
                     elif selected_square is None:
@@ -370,6 +370,7 @@ class Game:
 
     def select_target_square(self,
                       character: Class,
+                      skill_range: int,
                       x_start: int = 0,
                       y_start: int = 0,
                     )-> Square:
@@ -416,22 +417,22 @@ class Game:
             if action == self.data["directionalControls"]["north"]:
                 if y > 0:
                     y = y - 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["west"]:
                 if x > 0:
                     x = x - 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["south"]:
                 if y < self.map.height - 1:
                     y = y + 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["east"]:
                 if x < self.map.width - 1:
                     x = x + 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == "\n":
                 if not self.square_is_empty(x, y):
@@ -448,6 +449,7 @@ class Game:
     def target_area_range(self,
                           character: Class, 
                           range_area: Range,
+                          skill_range: int,
                           x_start: int = 0,
                           y_start: int = 0
                         ) -> Square:
@@ -505,24 +507,24 @@ class Game:
             x = selected_square[0]
             y = selected_square[1]
             if action == self.data["directionalControls"]["north"]:
-                if y > 0 + range_area.value:
+                if y > range_area.value:
                     y = y - 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["west"]:
-                if x > 0 + range_area.value:
+                if x > range_area.value:
                     x = x - 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["south"]:
                 if y < self.map.height - 1 - range_area.value:
                     y = y + 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == self.data["directionalControls"]["east"]:
                 if x < self.map.width - 1 - range_area.value:
                     x = x + 1
-                    if character.is_at_range_coords(x, y):
+                    if character.is_at_range_coords(x, y, skill_range):
                         selected_square = (x, y)
             elif action == "\n":
                 selected_squares = []
@@ -539,14 +541,29 @@ class Game:
             elif action == self.data["quit_key"]:
                 return None
             
+    def validate_skill_launch(self) -> bool:
+        self.update_map()
+        self.display_map(self.data["skillValidation"])
+        
+        self.display_options({
+            self.data["enter_key"] : self.data["enter_value"],
+            self.data["cancel_key"] : self.data["cancel_value"],
+        })
+        while True:
+            action = self.map_window.getkey()
+            if action == self.data["cancel_key"]:
+                return False
+            elif action ==  "\n":
+                return True
     
     def select_ennemy_or_ally_target_square(self,
                       character: Class,
+                      skill_range: int,
                       ally: bool
                     )-> Square:
         x, y = 0, 0
         while True:
-            selected_square = self.select_target_square(character, x, y)
+            selected_square = self.select_target_square(character, skill_range, x, y)
             if selected_square is None:
                 return None
             elif selected_square == -1:

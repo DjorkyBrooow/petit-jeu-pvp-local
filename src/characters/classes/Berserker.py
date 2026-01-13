@@ -1,4 +1,6 @@
 from characters.Class import Class
+from game import Game
+from game.Square import Square
 from game.static.Constants import *
 
 class Berserker(Class):
@@ -29,6 +31,7 @@ class Berserker(Class):
   skill_2_description = """
     Throws an axe at an ennemy
     Can be thrown from Range.MID_LONG_RANGE
+    Reduces mobility for 2 rounds
   """
 
   def __init__(self, faction) -> None:
@@ -36,20 +39,33 @@ class Berserker(Class):
     super().__init__(faction)
     
   def passive(self) -> None:
+    self.current_mobility += Mobility.VERY_LOW_MOBILITY.value
+    self.current_damage += Damage.VERY_LOW_DAMAGE.value
     super().passive()
 
-  def skill_1(self) -> None:
-    if not self.fury_mode:
-      self.fury_mode = True
-      self.current_damage = int(self.damage.value * 1.3)
-      self.current_mobility = int(self.mobility.value * 1.5)
-      self.current_range = int(self.range.value * 2)
-      self.critical_rate = 0.2
-      self.left_fury_mode = self.duration_fury_mode
-    super().skill_1()
+  def skill_1(self, game: Game) -> None:
+    if game.validate_skill_launch():
+      if not self.fury_mode:
+        self.fury_mode = True
+        self.current_damage += int(self.current_damage * 0.3)
+        self.current_mobility += int(self.mobility.value * 0.5)
+        self.current_range += int(self.range.value)
+        self.current_critical_rate += self.base_critical_rate
+        self.left_fury_mode = self.duration_fury_mode
+        super().skill_1(game)
   
-  def skill_2(self) -> None:
-    super().skill_2()
+  def skill_2(self, game: Game) -> None:
+    selected_square = game.select_ennemy_or_ally_target_square(self, Range.MID_LONG_RANGE, False)
+    if isinstance(selected_square, Square):
+      target: Class = game.get_character_from_square(selected_square)
+      if isinstance(target, Class):
+        if target.faction != self.faction:
+          target.suffer_damage(self.skill_2_name, int(self.current_damage/2))
+        super().skill_2(game)
+      else:
+        return target
+    else:
+      return selected_square
   
   def start_turn(self) -> None:
     super().start_turn()

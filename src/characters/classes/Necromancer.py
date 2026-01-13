@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Necromancer(Class):
   
@@ -23,17 +24,17 @@ class Necromancer(Class):
     # He has half of the stats of the original character
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Curses an ennemy and circles him
     # The ennemy is not allowed move for 1 round
     # If he moves he is cursed for the next 3 rounds
     # Increasing the damages he suffers
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Suffers damage and gains a damage buff 
     # For 3 rounds
-    super().skill_2()
+    super().skill_2(game)
   
   
   def start_turn(self) -> None:

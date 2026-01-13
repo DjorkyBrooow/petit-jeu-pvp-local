@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 from enum import Enum
 
 
@@ -39,7 +40,7 @@ class Elementalist(Class):
     # After changing elements, can cast an auto attack for free
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Changes current element : 
     # Water, air, fire, earth 
     # Default : no element
@@ -53,14 +54,14 @@ class Elementalist(Class):
       self.skill_2_name = "Eruption volcanique"
     elif self.current_element == Element.WATER:
       self.skill_2_name = "Sources chaudes"
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Water : launches a water ball that heals all allies in the area, leaves a puddle that heals at each round for 3 rounds
     # Fire : launches a fireball in an area that deals damage to ennemies and leaves flames that deal damage each round for 3 rounds
     # Earth : Gives a shield to all allies around for 1 round
     # Air : Increases mobility of all allies around him for 1 round
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

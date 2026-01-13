@@ -1,4 +1,5 @@
 from characters.Class import Class
+from game import Game
 from game.static.Constants import *
 
 
@@ -31,18 +32,18 @@ class Hunter(Class):
     # Both can be cumulated
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Summons a beast to help him fight
     # Only one can be summoned at a time
     # Beast has own abilities
     # Lynx : Hits a target and gives a bleed, additional chances toi crit
     # Rhinoceros : Charge, deals damage to the targets on the way and repells them
     # Monkey : Throws a banana, deals low damage and debuffs the target
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Repells the close ennemies in a direction and jumps in the other direction
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

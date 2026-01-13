@@ -42,18 +42,22 @@ class Alchemist(Class):
     return value
 
   def skill_1(self, game: Game) -> None:
-    selected_square = game.select_target_square(self, 0, 0)
-    target: Class = game.get_character_from_square(selected_square)
-    if target is not None and target != -1:
-      if target.faction == self.faction:
-        target.buff_damage(self.passive(1), 2, f"{self.skill_1_name} {self.content}", target)
+    selected_square = game.select_target_square(self, self.current_range)
+    if isinstance(selected_square, Square):
+      target: Class = game.get_character_from_square(selected_square)
+      if isinstance(target, Class):
+        if target.faction == self.faction:
+          target.buff_damage(self.passive(1), 2, f"{self.skill_1_name} {self.content}", target)
+        else:
+          target.buff_damage(self.passive(-1), 2, f"{self.skill_1_name} {self.content}", target)
+        super().skill_1(game)
       else:
-        target.buff_damage(self.passive(-1), 2, f"{self.skill_1_name} {self.content}", target)
+        return target
     else:
-      return target
+      return selected_square
   
   def skill_2(self, game: Game) -> None:
-    selected_squares : list[Square] = game.target_area_range(self, Range.CLOSE_RANGE)
+    selected_squares : list[Square] = game.target_area_range(self, Range.CLOSE_RANGE, self.current_range)
     if selected_squares is not None or selected_squares != -1:
       for elem in selected_squares:
         elem.set_square_type(SquareType.HOLY_FIRE, 2)

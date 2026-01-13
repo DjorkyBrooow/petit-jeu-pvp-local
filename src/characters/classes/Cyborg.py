@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 from game.Counter import Counter
 
 class Cyborg(Class):
@@ -27,17 +28,17 @@ class Cyborg(Class):
     # Each round, overcharge decreases by 1
     super().passive()
 
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Dashes behind a target at Range.MID_LONG_RANGE
     # Deals damage and stuns the target
     # Overcharge += 3
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Cleanses all negative effects
     # Heals few hp 
     # Overcharge += 3
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

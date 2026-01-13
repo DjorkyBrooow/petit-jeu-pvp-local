@@ -92,6 +92,7 @@
   "areaSelection": "Veuillez choisir une zone cible",
   "round": "Tour",
   "remainingMovements": "Déplacements restants",
+  "skillValidation" : "Veuillez choisir une action",
 
   "currentCharacter": "Tour de",
   "targetCharacter": "Cible",

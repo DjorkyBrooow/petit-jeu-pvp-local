@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Ranger(Class):
   
@@ -23,16 +24,16 @@ class Ranger(Class):
     # The bigger the damage
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Shoots a perforing shot 
     # Ignores shields and continues behind the target
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Executes an ennemy
     # If the target is low hp 
     # Critical hit granted
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()

@@ -15,9 +15,10 @@ class Class(ABC):
     current_mobility: int
     current_damage: int
     current_range: int
+    current_critical_rate: float
     state: State
     is_alive: bool
-    critical_rate: float = 0.1
+    base_critical_rate: float = 0.1
     critical_hit: float = 1.4
 
     # Unique stats
@@ -83,6 +84,7 @@ class Class(ABC):
         self.current_mobility = self.mobility.value
         self.current_damage = self.damage.value
         self.current_range = self.range.value
+        self.current_critical_rate = self.base_critical_rate
         self.state = State.NORMAL
         self.is_alive = True
         self.faction = faction
@@ -129,7 +131,7 @@ class Class(ABC):
     def auto_attack(self, target: 'Class') -> None:
         damage = self.current_damage
         rng = random.randrange(100)
-        if rng <= self.critical_rate * 100:
+        if rng <= self.current_critical_rate * 100:
             damage *= self.critical_hit
         target.suffer_damage('Attaque auto', damage)
         self.used_auto_attack = True
@@ -218,12 +220,12 @@ class Class(ABC):
             res = True
         return res
     
-    def is_at_range_coords(self, x: int, y: int) -> bool:
+    def is_at_range_coords(self, x: int, y: int, skill_range: int) -> bool:
         res = False
         x_diff= self.x_coord - x
         y_diff= self.y_coord - y
         distance = sqrt( x_diff**2 + y_diff**2 )
-        if distance <= self.current_range:
+        if distance <= skill_range:
             res = True
         return res
 
@@ -246,7 +248,7 @@ class Class(ABC):
         counter = BuffDamageCounter(damage_buff, skill_name, duration)
         target.buff_counters[skill_name] = counter
         for key in target.buff_counters:
-            target.current_damage = target.damage.value + target.buff_counters[key].value
+            target.current_damage += target.buff_counters[key].value
         if target.current_damage < Damage.VERY_LOW_DAMAGE.value:
             target.current_damage = Damage.VERY_LOW_DAMAGE.value
         return True

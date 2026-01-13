@@ -1,5 +1,6 @@
 from characters.Class import Class
 from game.static.Constants import *
+from game import Game
 
 class Gravedigger(Class):
   
@@ -26,17 +27,17 @@ class Gravedigger(Class):
     # At the death of this character, the gravedigger doubles the previous bonus
     super().passive()
     
-  def skill_1(self) -> None:
+  def skill_1(self, game : Game) -> None:
     # Hits an ennemy with his shovel
     # Heals hp with each hit
     # Heal is increased if target is low hp
     # Damages are increased if the target is low hp
-    super().skill_1()
+    super().skill_1(game)
   
-  def skill_2(self) -> None:
+  def skill_2(self, game : Game) -> None:
     # Targets an area and all characters in this area are immobilized
     # Suffering enough damage sets them free
-    super().skill_2()
+    super().skill_2(game)
   
   def start_turn(self) -> None:
     super().start_turn()
